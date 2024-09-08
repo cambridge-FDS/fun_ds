@@ -3,6 +3,7 @@ channels:
   - conda-forge
   - nodefaults
 dependencies:
+  # defaults
   - python>=3.8
   - make
   - numpydoc
@@ -14,3 +15,10 @@ dependencies:
   - sphinx
   - sphinxcontrib-apidoc
   - sphinx_rtd_theme
+  # data
+  - pandas
+  - sqlalchemy
+  - sqlite
+  - kaggle
+  # interactive
+  - ipykernel
