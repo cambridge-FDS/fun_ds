@@ -30,8 +30,8 @@ _mod = importlib.import_module("fun_ds")
 
 
 project = "fun_ds"
-copyright = f"{datetime.date.today().year}, QuantCo, Inc"
-author = "QuantCo, Inc."
+copyright = f"{datetime.date.today().year}"
+author = "Adrian Ochs, Christian Roerig"
 
 extensions = [
     "numpydoc",
