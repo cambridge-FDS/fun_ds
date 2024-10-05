@@ -16,6 +16,7 @@ dependencies:
   - sphinxcontrib-apidoc
   - sphinx_rtd_theme
   # data
+  - duckdb
   - pandas
   - sqlalchemy
   - sqlite
