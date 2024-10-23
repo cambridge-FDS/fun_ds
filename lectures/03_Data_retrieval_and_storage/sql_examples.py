@@ -191,3 +191,12 @@ ddb.sql(query)
 ddb.sql(query).to_df()
 
 # %%
+import duckdb as ddb
+
+ddb.sql("INSTALL sqlite;")  # install the sqlite extension
+ddb.sql("LOAD sqlite;")  # load the sqlite extension
+# con = ddb.connect("nba.sqlite", config={'allow_unsigned_extensions': 'true'})
+
+con = ddb.connect("nba.sqlite")
+con.sql("SELECT * FROM game LIMIT 10").show()
+# %%
