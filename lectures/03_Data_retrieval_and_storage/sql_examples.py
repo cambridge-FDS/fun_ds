@@ -16,7 +16,7 @@ kaggle.api.dataset_download_files("wyattowalsh/basketball", unzip=True)
 # %%
 
 # setup sqlite connection
-con = sql.connect("nba.sqlite")
+con = sql.connect("nba.sqlite", timeout=30)
 
 # let's check that it works
 df_games = pd.read_sql("SELECT * FROM game LIMIT 10", con)
@@ -199,4 +199,6 @@ ddb.sql("LOAD sqlite;")  # load the sqlite extension
 
 con = ddb.connect("nba.sqlite")
 con.sql("SELECT * FROM game LIMIT 10").show()
+# %%
+con.close()
 # %%
