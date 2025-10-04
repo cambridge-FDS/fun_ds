@@ -1,6 +1,6 @@
 # fun_ds
 
-Course material for Fundamentals of Data Science (Michaelmas 2024) at University of Cambridge.
+Course material for Fundamentals of Data Science (Michaelmas 2025) at University of Cambridge.
 
 ## Installation
 
