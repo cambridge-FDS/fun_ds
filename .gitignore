@@ -121,3 +121,7 @@ mlruns
 
 # direnv
 .envrc
+
+# sqlite + csv folder
+*.sqlite
+csv
