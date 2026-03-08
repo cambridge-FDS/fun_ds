@@ -14,3 +14,15 @@ dependencies:
   - sphinx
   - sphinxcontrib-apidoc
   - sphinx_rtd_theme
+  - sphinx-book-theme
+  - myst-nb
+  # data
+  - duckdb
+  - pandas
+  - sqlalchemy
+  - sqlite
+  - kaggle
+  - ydata-profiling
+  # interactive
+  - ipykernel
+  - ipywidgets

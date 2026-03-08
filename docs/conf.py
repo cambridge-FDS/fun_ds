@@ -33,11 +33,7 @@ project = "fun_ds"
 copyright = f"{datetime.date.today().year}"
 author = "Adrian Ochs, Christian Roerig"
 
-extensions = [
-    "numpydoc",
-    "sphinx.ext.linkcode",
-    "sphinxcontrib.apidoc",
-]
+extensions = ["numpydoc", "sphinx.ext.linkcode", "sphinxcontrib.apidoc", "myst_nb"]
 
 apidoc_module_dir = "../fun_ds"
 apidoc_output_dir = "api"
@@ -46,7 +42,13 @@ apidoc_extra_args = ["--implicit-namespaces"]
 
 templates_path = ["_templates"]
 exclude_patterns = ["_build", "Thumbs.db", ".DS_Store"]
-html_theme = "sphinx_rtd_theme"
+html_theme = "sphinx_book_theme"
+html_theme_options = {
+    "repository_url": "https://github.com/cambridge-FDS/fun_ds",
+    "use_repository_button": True,
+}
+html_logo = "Fun_DS.png"
+html_title = "Fundamentals of Data Science"
 html_static_path = ["_static"]
 
 
