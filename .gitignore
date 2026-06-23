@@ -65,9 +65,15 @@ instance/
 # Scrapy stuff:
 .scrapy
 
-# Sphinx documentation
+# Sphinx / Jupyter Book
 docs/_build/
 docs/api/
+
+# pixi
+.pixi/
+
+# macOS
+.DS_Store
 
 # PyBuilder
 target/

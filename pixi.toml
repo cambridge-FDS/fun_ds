@@ -1,0 +1,53 @@
+[workspace]
+name = "fun_ds"
+version = "0.1.0"
+description = "Fundamentals of Data Science – MPhil EDS, Cambridge"
+channels = ["conda-forge"]
+platforms = ["osx-arm64", "osx-64", "linux-64"]
+
+[dependencies]
+python = ">=3.11"
+numpy = ">=1.24"
+pandas = ">=2.0"
+scikit-learn = ">=1.3"
+matplotlib = ">=3.7"
+seaborn = "*"
+duckdb = "*"
+sqlalchemy = "*"
+ipykernel = "*"
+ipywidgets = "*"
+
+[feature.docs.dependencies]
+jupyter-book = ">=2.0"
+sphinxcontrib-bibtex = "*"
+numpydoc = "*"
+sphinx-book-theme = "*"
+
+[feature.test.dependencies]
+pytest = ">=7"
+pytest-cov = "*"
+
+[feature.lint.dependencies]
+pre-commit = "*"
+ruff = "*"
+
+[feature.dev.dependencies]
+hatchling = "*"
+hatch-vcs = "*"
+pip = "*"
+
+[environments]
+default = { features = ["docs", "test", "lint", "dev"], solve-group = "default" }
+docs = { features = ["docs", "dev"], solve-group = "default" }
+test = { features = ["test", "dev"], solve-group = "default" }
+lint = { features = ["lint"], solve-group = "default" }
+
+[tasks]
+install = "pip install --no-build-isolation -e ."
+docs-build = { cmd = "jupyter-book build --html", cwd = "docs", depends-on = ["install"] }
+docs-start = { cmd = "jupyter-book start", cwd = "docs", depends-on = ["install"] }
+docs-clean = "rm -rf docs/_build"
+test = { cmd = "pytest", depends-on = ["install"] }
+lint = "pre-commit run --all-files"
+format = "ruff format src/ tests/"
+check = "ruff check src/ tests/"

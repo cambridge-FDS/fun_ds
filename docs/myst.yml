@@ -1,0 +1,48 @@
+version: 1
+
+project:
+  title: Fundamentals of Data Science
+  authors:
+    - name: Adrian Ochs
+    - name: Christian Roerig
+  copyright: "2024-2025"
+  license: CC-BY-4.0
+  keywords:
+    - data science
+    - machine learning
+    - python
+  github: https://github.com/cambridge-FDS/fun_ds
+  bibliography:
+    - references.bib
+  toc:
+    - file: intro.md
+    - title: Getting Started
+      children:
+        - file: setup/environment_manager.md
+        - file: setup/git.md
+        - file: setup/vscode.md
+        - file: setup/pre-commit-hooks.md
+    - title: Lectures
+      children:
+        - file: lectures/lecture_1.md
+        - file: lectures/lecture_2.ipynb
+        - file: lectures/lecture_3.ipynb
+        - file: lectures/lecture_4.ipynb
+        - file: lectures/lecture_5.ipynb
+        - file: lectures/lecture_6.ipynb
+        - file: lectures/lecture_7.ipynb
+        - file: lectures/lecture_8.ipynb
+        - file: lectures/lecture_9.ipynb
+    - title: Software Engineering
+      children:
+        - file: swe/memory_profiling.md
+
+site:
+  title: Fundamentals of Data Science
+  template: book-theme
+  options:
+    logo: Fun_DS.png
+    favicon: Fun_DS.png
+  actions:
+    - title: GitHub
+      url: https://github.com/cambridge-FDS/fun_ds
