@@ -44,7 +44,8 @@ lint = { features = ["lint"], solve-group = "default" }
 
 [tasks]
 install = "pip install --no-build-isolation -e ."
-docs-build = { cmd = "jupyter-book build --html", cwd = "docs", depends-on = ["install"] }
+docs-execute = { cmd = "jupyter nbconvert --to notebook --execute --inplace --ExecutePreprocessor.timeout=300 --ExecutePreprocessor.kernel_name=python3 lectures/*.ipynb", cwd = "docs", depends-on = ["install"] }
+docs-build = { cmd = "jupyter-book build --html", cwd = "docs", depends-on = ["docs-execute"] }
 docs-start = { cmd = "jupyter-book start", cwd = "docs", depends-on = ["install"] }
 docs-clean = "rm -rf docs/_build"
 test = { cmd = "pytest", depends-on = ["install"] }

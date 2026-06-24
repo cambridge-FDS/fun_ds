@@ -14,7 +14,7 @@ pixi run install
 
 # Build the online book
 pixi run docs-build
-pixi run docs-serve   # open http://localhost:8000
+pixi run docs-start
 ```
 
 ## Development

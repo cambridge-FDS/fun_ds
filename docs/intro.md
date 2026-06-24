@@ -3,9 +3,7 @@
 Welcome to the online resource for **Fundamentals of Data Science**, part of the
 MPhil in Economics and Data Science at the University of Cambridge.
 
-This course teaches end-to-end data science with a strong software engineering
-foundation. By the end you will be able to develop, deploy, and maintain
-professional-grade data science projects.
+This course introduces students to the fundamental concepts, techniques, and tools in data science. With a focus on end-to-end data science projects, the course is designed to equip students with the skills necessary for successful interviews and careers in the field. Students will learn to tackle real-world data problems, covering the entire spectrum from data acquisition and preprocessing to analysis, visualisation, statistical modelling, and considerations for moving models to production. As part of this course, students will also be equipped with valuable software engineering skills.
 
 ## Course Structure
 
@@ -28,6 +26,20 @@ The course is organised into three parts:
 | 7 | Statistical Modelling (cont.) | Model composition, custom losses |
 | 8 | Evaluation & Interpretability | SHAP, PDP, ALE |
 | 9 | Model Tracking & Deployment | MLflow, ONNX, FastAPI |
+
+:::{admonition} Running the notebooks
+:class: tip
+The best way to follow along is to clone the repository and run the notebooks in your IDE:
+
+```bash
+git clone https://github.com/cambridge-FDS/fun_ds.git
+cd fun_ds
+pixi install
+pixi run install
+```
+
+Then open any notebook under `docs/lectures/` in VS Code and select the `pixi` environment as the kernel.
+:::
 
 ## The `fun_ds` Package
 

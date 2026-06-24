@@ -255,5 +255,7 @@ Try:
 ## Further Reading
 
 - Memray documentation: https://bloomberg.github.io/memray/
+- Getting started guide: https://bloomberg.github.io/memray/getting_started.html
+- Flame graph reporter (including temporal mode): https://bloomberg.github.io/memray/flamegraph.html
 - Memray GitHub repository: https://github.com/bloomberg/memray
 - pytest-memray: https://github.com/bloomberg/pytest-memray

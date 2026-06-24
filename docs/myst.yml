@@ -12,6 +12,8 @@ project:
     - machine learning
     - python
   github: https://github.com/cambridge-FDS/fun_ds
+  settings:
+    output_stderr: remove
   bibliography:
     - references.bib
   toc:
