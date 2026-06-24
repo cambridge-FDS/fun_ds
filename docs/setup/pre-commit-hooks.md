@@ -49,7 +49,7 @@ Using pre-commit helps with:
 :   No arguments about formatting or style—tools decide.
 
 **Industry Practice**
-:   Pre-commit is widely used in professional Python projects.
+:   Pre-commit is widely used in professional Python projects. The same `pre-commit run --all-files` command also runs in CI pipelines, so passing it locally means passing it remotely.
 
 :::{tip}
 Think of pre-commit as an automated "last sanity check" before code leaves your machine.
@@ -134,6 +134,12 @@ repos:
     hooks:
       - id: nbstripout
 ```
+
+:::{note}
+The version numbers above (e.g. `rev: 24.8.0`) will become outdated over time.
+Run `pre-commit autoupdate` periodically to pull in the latest stable versions.
+The course repository's `.pre-commit-config.yaml` is the canonical reference — use it as your starting point.
+:::
 
 ---
 
@@ -275,7 +281,16 @@ pre-commit run --all-files
 
 :::{tip}
 This is useful before pushing or submitting assignments.
+It is also the command that runs in CI — so if it passes locally, it will pass remotely.
 :::
+
+Keep hook versions up to date:
+
+```bash
+pre-commit autoupdate
+```
+
+This updates all `rev:` values in your `.pre-commit-config.yaml` to the latest stable releases.
 
 ---
 

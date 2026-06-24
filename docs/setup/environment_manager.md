@@ -12,6 +12,19 @@ If you are new to environments: an environment is an isolated set of packages an
 This prevents "it works on my machine" problems and avoids conflicts between projects.
 :::
 
+:::{admonition} Day 1 Checklist
+:class: tip
+
+Here are all the steps to get your development environment ready for this course — in order:
+
+1. **Install pixi** (this guide, Option B)
+2. **Clone the course repo** and run `pixi install`
+3. **Install VS Code + extensions** (see [VS Code guide](vscode.md))
+4. **Configure Git identity** (see [Git guide](git.md))
+5. **Set up GitHub authentication** (see [Git guide](git.md))
+6. **Install pre-commit hooks** (see [pre-commit guide](pre-commit-hooks.md))
+:::
+
 ---
 
 ## Option A: micromamba
@@ -35,7 +48,17 @@ Choose micromamba if:
 
 ### Installation
 
-Install micromamba using your platform's instructions.
+**macOS / Linux:**
+
+```bash
+"${SHELL}" <(curl -L micro.mamba.pm/install.sh)
+```
+
+**Windows (PowerShell):**
+
+```powershell
+Invoke-Expression ((Invoke-WebRequest -Uri https://micro.mamba.pm/install.ps1 -UseBasicParsing).Content)
+```
 
 :::{tip}
 You can usually install micromamba in a user directory and avoid needing admin rights.
@@ -129,9 +152,25 @@ In short: fewer installation issues and fewer "dependency mismatch" problems.
 
 ### Installation
 
-Install pixi using your platform's instructions.
+**macOS / Linux:**
 
-Verify it works:
+```bash
+curl -fsSL https://pixi.sh/install.sh | sh
+```
+
+**Windows (PowerShell):**
+
+```powershell
+winget install prefix-dev.pixi
+```
+
+Or via PowerShell directly:
+
+```powershell
+iwr -useb https://pixi.sh/install.ps1 | iex
+```
+
+After installation, open a **new terminal** and verify:
 
 ```bash
 pixi --version
@@ -148,7 +187,21 @@ A typical workflow is:
 
 1. clone/download a course repository (containing `pixi.toml`)
 2. run `pixi install`
-3. run tools via `pixi run ...` or enter the environment
+3. run tools via `pixi run ...` or enter the environment with `pixi shell`
+
+### Entering the environment shell
+
+For an interactive session where you want to type commands directly (rather than prefixing each with `pixi run`), use:
+
+```bash
+pixi shell
+```
+
+This drops you into a shell with the environment activated. Type `exit` to leave.
+
+:::{tip}
+Use `pixi run <command>` for one-off commands and `pixi shell` when you want an interactive session.
+:::
 
 ### Create a new project (example)
 
@@ -177,6 +230,17 @@ Run Python inside the environment:
 ```bash
 pixi run python --version
 ```
+
+### `.gitignore` for pixi projects
+
+pixi creates a `.pixi/` directory for the local environment. This should **not** be committed to Git.
+When you run `pixi init`, a `.gitignore` is created automatically — check that it includes:
+
+```text
+.pixi
+```
+
+If not, add it manually.
 
 ### Starting JupyterLab via pixi
 
@@ -215,6 +279,12 @@ jupyterlab = "*"
 lab = "jupyter lab"
 test = "python -m pytest -q"
 ```
+
+:::{note}
+The `"*"` version specifier means "any version". In your own scratch projects this is fine.
+In the course repository, the `pixi.lock` file pins every dependency to exact versions — so everyone
+runs the same code regardless of when they install.
+:::
 
 Then students can run:
 
@@ -275,7 +345,8 @@ If you already use conda/mamba and prefer that style, **micromamba is a solid al
 ## Troubleshooting tips
 
 - If commands are not found, restart your terminal or ensure the tool is on your PATH.
-- If installation fails due to network restrictions, try again on a different connection (campus VPN/firewall issues are common).
+- If `pixi install` fails with an SSL or certificate error, this is common on university networks. Try connecting via a different network, disabling VPN, or asking IT about certificate configuration.
+- If the pixi environment is not visible in VS Code, see the [VS Code guide](vscode.md) for how to point the interpreter selector to `.pixi/envs/default/`.
 - If you are on Windows, prefer PowerShell or Windows Terminal and keep paths short (avoid deeply nested folders).
 
 :::{warning}

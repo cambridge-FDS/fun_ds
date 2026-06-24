@@ -128,6 +128,115 @@ git init
 
 ---
 
+## Ignoring Files: `.gitignore`
+
+Not everything belongs in Git. A `.gitignore` file tells Git which files to ignore.
+
+Create one in the root of your repository:
+
+```bash
+# in the project root
+touch .gitignore
+```
+
+A sensible default for data science projects:
+
+```text
+# Python
+__pycache__/
+*.pyc
+*.pyo
+.Python
+
+# Environments
+.env
+.venv/
+.pixi/
+
+# Jupyter
+.ipynb_checkpoints/
+
+# Data (store externally)
+data/
+*.csv
+*.parquet
+*.h5
+
+# OS files
+.DS_Store
+Thumbs.db
+```
+
+Add and commit it:
+
+```bash
+git add .gitignore
+git commit -m "Add .gitignore"
+```
+
+:::{warning}
+Once a file is tracked by Git, adding it to `.gitignore` does **not** remove it from history.
+Set up `.gitignore` **before** your first commit, or use `git rm --cached <file>` to untrack a file later.
+:::
+
+---
+
+## GitHub Authentication
+
+To push and pull from GitHub, you need to authenticate. There are two main approaches:
+
+### Option 1: SSH Key (recommended)
+
+Generate a key (if you don't have one):
+
+```bash
+ssh-keygen -t ed25519 -C "your.email@example.com"
+```
+
+Copy the public key to your clipboard:
+
+```bash
+# macOS
+cat ~/.ssh/id_ed25519.pub | pbcopy
+
+# Linux
+cat ~/.ssh/id_ed25519.pub | xclip -selection clipboard
+
+# Windows (PowerShell)
+Get-Content ~/.ssh/id_ed25519.pub | Set-Clipboard
+```
+
+Then add it to GitHub: **Settings → SSH and GPG keys → New SSH key**.
+
+Test the connection:
+
+```bash
+ssh -T git@github.com
+```
+
+When cloning with SSH, use the SSH URL:
+
+```bash
+git clone git@github.com:username/repository.git
+```
+
+### Option 2: HTTPS with a Personal Access Token
+
+GitHub no longer accepts your password over HTTPS. Instead, create a **Personal Access Token (PAT)**:
+
+1. Go to **GitHub → Settings → Developer settings → Personal access tokens → Tokens (classic)**
+2. Generate a token with `repo` scope
+3. Use the token as your password when Git prompts you
+
+:::{tip}
+On macOS, Git Credential Manager can cache your token automatically.
+On Windows, Git for Windows includes the credential manager by default.
+:::
+
+See the [GitHub authentication docs](https://docs.github.com/en/authentication) for full details.
+
+---
+
 ## The Core Git Workflow
 
 The three most important commands:
@@ -205,7 +314,7 @@ git pull origin main
 Create and switch to a branch:
 
 ```bash
-git checkout -b feature-cleaning
+git switch -c feature-cleaning
 ```
 
 Work, commit, then push:
@@ -258,13 +367,20 @@ git diff --staged
 Undo local changes (careful!):
 
 ```bash
-git checkout -- file.py
+git restore file.py
 ```
 
 Unstage a file:
 
 ```bash
 git restore --staged file.py
+```
+
+Park in-progress work temporarily:
+
+```bash
+git stash        # save current changes
+git stash pop    # restore them later
 ```
 
 ---
@@ -363,4 +479,5 @@ Git is designed to help you recover.
 
 - Git documentation: https://git-scm.com/doc
 - GitHub Docs: https://docs.github.com/
+- GitHub authentication: https://docs.github.com/en/authentication
 - Pro Git (free book): https://git-scm.com/book/en/v2

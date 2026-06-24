@@ -52,6 +52,13 @@ Cmd  + Shift + P   (macOS)
 
 You will use this frequently.
 
+Extensions can also be installed from the terminal:
+
+```bash
+code --install-extension ms-python.python
+code --install-extension ms-toolsai.jupyter
+```
+
 ---
 
 ## Recommended Core Extensions
@@ -99,9 +106,9 @@ This allows you to work with notebooks **inside VS Code**, instead of switching 
 
 ## Environment & Reproducibility Support
 
-### Environment Selector (important)
+### Selecting the Python Interpreter (for `.py` scripts)
 
-The Python extension allows you to select the correct environment.
+The Python extension allows you to select the correct environment for scripts.
 
 To select your environment:
 
@@ -112,9 +119,32 @@ Ctrl/Cmd + Shift + P
 
 Choose the environment created via **pixi** or **micromamba**.
 
+If the pixi environment is not listed, enter the path manually. It is located at:
+
+```text
+<project-root>/.pixi/envs/default/bin/python     (macOS/Linux)
+<project-root>/.pixi/envs/default/python.exe     (Windows)
+```
+
 :::{warning}
 If the wrong interpreter is selected, imports may fail even though packages are installed.
 Always check the interpreter shown in the bottom status bar.
+:::
+
+### Selecting the Jupyter Kernel (for `.ipynb` notebooks)
+
+Notebooks use a **kernel**, which is set separately from the script interpreter.
+
+To select the kernel for a notebook:
+
+1. Open a `.ipynb` file
+2. Click the kernel selector in the **top-right corner** of the notebook (it shows the current kernel name, e.g. `Python 3`)
+3. Choose **Select Another Kernel → Python Environments**
+4. Pick the environment under `.pixi/envs/default/`
+
+:::{tip}
+The kernel selector and the interpreter selector are independent settings.
+If your notebook imports fail, check the kernel — not just the interpreter.
 :::
 
 ---
@@ -266,6 +296,13 @@ Example minimal settings snippet:
 }
 ```
 
+### Project-level settings (`.vscode/settings.json`)
+
+You can commit a `.vscode/settings.json` file to a project so all contributors share the same editor settings.
+The course repository ships one — when you open the project in VS Code, these settings activate automatically.
+
+This is how the course enforces consistent formatting and interpreter behaviour across everyone's machines.
+
 ---
 
 ## What You Should Avoid
@@ -278,6 +315,7 @@ Example minimal settings snippet:
 
 :::{warning}
 Most "VS Code is broken" issues are actually **environment selection issues**.
+Check the interpreter (bottom status bar) and the notebook kernel (top-right picker) before troubleshooting anything else.
 :::
 
 ---
@@ -292,8 +330,9 @@ Most "VS Code is broken" issues are actually **environment selection issues**.
    - (Optional) Ruff
 3. Clone or open the course project
 4. Run `pixi install`
-5. Select the correct Python interpreter
-6. Open notebooks or scripts and start working
+5. Select the correct Python interpreter (`.pixi/envs/default/`)
+6. Select the correct Jupyter kernel when opening notebooks
+7. Open notebooks or scripts and start working
 
 ---
 
