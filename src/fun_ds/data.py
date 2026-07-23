@@ -73,7 +73,9 @@ def make_regression_dataset(
     n_total = n_informative + n_noise
 
     X_arr = rng.standard_normal((n_samples, n_total))
-    coefs = rng.uniform(0.5, 2.0, size=n_informative) * rng.choice([-1, 1], size=n_informative)
+    coefs = rng.uniform(0.5, 2.0, size=n_informative) * rng.choice(
+        [-1, 1], size=n_informative
+    )
     y_arr = X_arr[:, :n_informative] @ coefs
 
     if interaction and n_informative >= 2:

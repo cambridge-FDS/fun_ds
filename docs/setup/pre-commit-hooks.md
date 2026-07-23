@@ -7,7 +7,7 @@
 This guide explains how to set up **pre-commit hooks** for data science projects and why they are an important part of a professional workflow.
 
 :::{important}
-**The course repository already ships a `.pre-commit-config.yaml`.** You do **not** need to write one from scratch — clone the course repo, run `pre-commit install`, and you are done. The configuration below is documented here so you understand *what* is running and *why*, and so you can reuse the pattern in your own projects.
+**The course repository already ships a `.pre-commit-config.yaml`.** You do **not** need to write one from scratch — clone the course repo, run `pre-commit install`, and you are done. The configuration below is documented here so you understand _what_ is running and _why_, and so you can reuse the pattern in your own projects.
 :::
 
 We focus on a **popular, battle-tested default configuration** that works well for:
@@ -19,14 +19,14 @@ We focus on a **popular, battle-tested default configuration** that works well f
 
 :::{note}
 Pre-commit hooks are **not about policing you**.
-They are about catching small issues *early*, automatically, before they turn into bugs, style debates, or broken submissions.
+They are about catching small issues _early_, automatically, before they turn into bugs, style debates, or broken submissions.
 :::
 
 ---
 
 ## What Are Pre-commit Hooks?
 
-A *pre-commit hook* is a script that runs **automatically before a Git commit is created**.
+A _pre-commit hook_ is a script that runs **automatically before a Git commit is created**.
 
 Typical tasks include:
 
@@ -45,19 +45,19 @@ If a hook fails, the commit is **blocked** until the issue is fixed.
 Using pre-commit helps with:
 
 **Code Quality**
-:   Ensures clean, readable code without relying on manual checks.
+: Ensures clean, readable code without relying on manual checks.
 
 **Reproducibility**
-:   Reduces hidden formatting and syntax issues that break notebooks or scripts.
+: Reduces hidden formatting and syntax issues that break notebooks or scripts.
 
 **Collaboration**
-:   Everyone follows the same rules automatically.
+: Everyone follows the same rules automatically.
 
 **Reduced Friction**
-:   No arguments about formatting or style—tools decide.
+: No arguments about formatting or style—tools decide.
 
 **Industry Practice**
-:   Pre-commit is widely used in professional Python projects. The same `pre-commit run --all-files` command also runs in CI pipelines, so passing it locally means passing it remotely.
+: Pre-commit is widely used in professional Python projects. The same `pre-commit run --all-files` command also runs in CI pipelines, so passing it locally means passing it remotely.
 
 :::{tip}
 Think of pre-commit as an automated "last sanity check" before code leaves your machine.
@@ -239,6 +239,7 @@ It is intentionally opinionated.
   - style issues
 
 With `--fix`:
+
 - Automatically fixes safe issues (e.g. unused imports)
 
 Why it matters:
@@ -261,6 +262,7 @@ Ruff catches mistakes that otherwise show up at runtime or grading time.
 
 Why it matters:
 Notebook outputs:
+
 - bloat Git history
 - cause merge conflicts
 - make diffs unreadable
@@ -314,7 +316,7 @@ Running pre-commit locally is only half the story. In professional projects the 
 
 This matters because:
 
-- A student (or teammate) can *bypass* local hooks with `git commit --no-verify`. CI cannot be bypassed.
+- A student (or teammate) can _bypass_ local hooks with `git commit --no-verify`. CI cannot be bypassed.
 - Fresh clones, forks, and reviewers all get the same guarantee: **everything on `main` passed the checks.**
 - It removes the "did you run the formatter?" step from every code review.
 
@@ -374,10 +376,12 @@ No, in practice:
 ### "What if I disagree with a rule?"
 
 In this course:
+
 - Use the defaults
 - Focus on learning, not style debates
 
 In real projects:
+
 - Teams agree on rules **once**
 - Automation enforces them consistently
 

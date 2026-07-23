@@ -2,7 +2,7 @@
 
 ## Why use environments at all?
 
-Before we get to the tools, the *why*: a Python environment is an isolated set of packages and a specific Python version, scoped to a single project. Without one, you install everything into your system Python and quickly hit trouble.
+Before we get to the tools, the _why_: a Python environment is an isolated set of packages and a specific Python version, scoped to a single project. Without one, you install everything into your system Python and quickly hit trouble.
 
 Three forces conspire against a "just pip install it" workflow:
 
@@ -10,7 +10,7 @@ Three forces conspire against a "just pip install it" workflow:
 - **Operating systems differ.** macOS (Intel vs. Apple Silicon), Linux, and Windows resolve binaries differently. A wheel that works on your laptop may not exist for a classmate's machine unless the environment manager knows how to solve per-platform.
 - **Hardware differs.** CUDA vs. CPU builds, ARM vs. x86, AVX support — the same "package" is actually a family of builds. An environment manager picks the right one.
 
-The goal is a **reproducible build**: given the same specification, anyone, anywhere, at any time gets the same working environment. This is the same principle Martin Kleppmann calls out in *Designing Data-Intensive Applications* — reproducibility is a system property you engineer for, not a happy accident.
+The goal is a **reproducible build**: given the same specification, anyone, anywhere, at any time gets the same working environment. This is the same principle Martin Kleppmann calls out in _Designing Data-Intensive Applications_ — reproducibility is a system property you engineer for, not a happy accident.
 
 :::{seealso}
 For a broader take on why reproducibility, project layout, and automation matter in scientific work, see {cite}`wilson2017good` — "Good Enough Practices in Scientific Computing".
@@ -42,16 +42,16 @@ flowchart LR
     F --> G[Verify:<br/>pixi run pytest -q<br/>5 min]
 ```
 
-| # | Step | Time | Where |
-|---|------|------|-------|
-| 1 | **Install pixi** | ~10 min | This guide, [Option B](#option-b-pixi-recommended) |
-| 2 | **Clone the course repo** | ~5 min | [Git guide](git.md) |
-| 3 | **Run `pixi install`** in the repo | ~10 min (depends on network) | This guide |
-| 4 | **Install VS Code + core extensions** | ~15 min | [VS Code guide](vscode.md) |
-| 5 | **Configure Git identity** | ~5 min | [Git guide](git.md) |
-| 6 | **Set up GitHub authentication (SSH or PAT)** | ~10 min | [Git guide](git.md) |
-| 7 | **Install pre-commit hooks** | ~5 min | [pre-commit guide](pre-commit-hooks.md) |
-| 8 | **Verify your setup** | ~5 min | See below |
+| #   | Step                                          | Time                         | Where                                              |
+| --- | --------------------------------------------- | ---------------------------- | -------------------------------------------------- |
+| 1   | **Install pixi**                              | ~10 min                      | This guide, [Option B](#option-b-pixi-recommended) |
+| 2   | **Clone the course repo**                     | ~5 min                       | [Git guide](git.md)                                |
+| 3   | **Run `pixi install`** in the repo            | ~10 min (depends on network) | This guide                                         |
+| 4   | **Install VS Code + core extensions**         | ~15 min                      | [VS Code guide](vscode.md)                         |
+| 5   | **Configure Git identity**                    | ~5 min                       | [Git guide](git.md)                                |
+| 6   | **Set up GitHub authentication (SSH or PAT)** | ~10 min                      | [Git guide](git.md)                                |
+| 7   | **Install pre-commit hooks**                  | ~5 min                       | [pre-commit guide](pre-commit-hooks.md)            |
+| 8   | **Verify your setup**                         | ~5 min                       | See below                                          |
 
 ### Step 8: Verify your setup
 
@@ -386,13 +386,13 @@ pixi run jupyter lab
 
 ## micromamba vs pixi (quick comparison)
 
-| Feature | micromamba | pixi |
-|---------|-----------|------|
-| Primary style | environment-first (conda-like) | project-first |
-| Reproducibility | good with discipline, but YAML can drift | excellent via lockfile |
-| Best for courses | workable | best (fewer "it doesn't work" issues) |
-| Commands | create/activate/install | add/install/run |
-| Typical artifacts | `environment.yml` | `pixi.toml` + `pixi.lock` |
+| Feature           | micromamba                               | pixi                                  |
+| ----------------- | ---------------------------------------- | ------------------------------------- |
+| Primary style     | environment-first (conda-like)           | project-first                         |
+| Reproducibility   | good with discipline, but YAML can drift | excellent via lockfile                |
+| Best for courses  | workable                                 | best (fewer "it doesn't work" issues) |
+| Commands          | create/activate/install                  | add/install/run                       |
+| Typical artifacts | `environment.yml`                        | `pixi.toml` + `pixi.lock`             |
 
 ---
 

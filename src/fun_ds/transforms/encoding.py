@@ -1,4 +1,5 @@
 """Categorical and cyclic feature encoders."""
+
 from __future__ import annotations
 
 import numpy as np
@@ -31,7 +32,7 @@ class CyclicalEncoder(TransformerMixin, BaseEstimator):
     def __init__(self, period: float = 24.0) -> None:
         self.period = period
 
-    def fit(self, X: ArrayLike, y: ArrayLike | None = None) -> "CyclicalEncoder":
+    def fit(self, X: ArrayLike, y: ArrayLike | None = None) -> CyclicalEncoder:
         """No-op."""
         return self
 
@@ -41,7 +42,10 @@ class CyclicalEncoder(TransformerMixin, BaseEstimator):
         theta = 2.0 * np.pi * x / self.period
         return np.column_stack([np.sin(theta), np.cos(theta)])
 
-    def get_feature_names_out(self, input_features: list[str] | None = None) -> list[str]:
+    def get_feature_names_out(
+        self, input_features: list[str] | None = None
+    ) -> list[str]:
+        """Return output feature names (`<name>_sin`, `<name>_cos`)."""
         name = input_features[0] if input_features else "x"
         return [f"{name}_sin", f"{name}_cos"]
 
@@ -91,16 +95,17 @@ class TargetEncoder(TransformerMixin, BaseEstimator):
         self.smoothing = smoothing
         self.handle_unknown = handle_unknown
 
-    def _smoothed_mean(self, series: pd.Series, target: pd.Series, global_mean: float) -> dict:
+    def _smoothed_mean(
+        self, series: pd.Series, target: pd.Series, global_mean: float
+    ) -> dict:
         """Compute per-category smoothed means."""
         stats = target.groupby(series).agg(["mean", "count"])
-        encoding = (
-            (stats["count"] * stats["mean"] + self.smoothing * global_mean)
-            / (stats["count"] + self.smoothing)
+        encoding = (stats["count"] * stats["mean"] + self.smoothing * global_mean) / (
+            stats["count"] + self.smoothing
         )
         return encoding.to_dict()
 
-    def fit(self, X: ArrayLike, y: ArrayLike) -> "TargetEncoder":
+    def fit(self, X: ArrayLike, y: ArrayLike) -> TargetEncoder:
         """Fit global encoding for use at inference time.
 
         Parameters

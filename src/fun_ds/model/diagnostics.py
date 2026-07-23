@@ -1,4 +1,5 @@
 """OLS regression diagnostics: leverage, Cook's distance, residual analysis."""
+
 from __future__ import annotations
 
 import numpy as np
@@ -63,7 +64,6 @@ class OLSDiagnostics:
         # Residual standard error (unbiased)
         dof = n - p - 1
         sigma2 = np.sum(residuals**2) / max(dof, 1)
-        sigma = np.sqrt(sigma2)
 
         # Standardised (internally studentised) residuals
         denom = np.sqrt(sigma2 * np.maximum(1.0 - self.leverage_, 1e-12))
@@ -95,19 +95,16 @@ class OLSDiagnostics:
             Sorted by cooks_d descending.
         """
         idx = index if index is not None else pd.RangeIndex(self._n)
-        return (
-            pd.DataFrame(
-                {
-                    "y_pred": self._y_pred,
-                    "residual": self._residuals,
-                    "leverage": self.leverage_,
-                    "std_residual": self.standardised_residuals_,
-                    "cooks_d": self.cooks_distance_,
-                },
-                index=idx,
-            )
-            .sort_values("cooks_d", ascending=False)
-        )
+        return pd.DataFrame(
+            {
+                "y_pred": self._y_pred,
+                "residual": self._residuals,
+                "leverage": self.leverage_,
+                "std_residual": self.standardised_residuals_,
+                "cooks_d": self.cooks_distance_,
+            },
+            index=idx,
+        ).sort_values("cooks_d", ascending=False)
 
     def influential_points(self, threshold: float | None = None) -> pd.DataFrame:
         """Return rows where Cook's distance exceeds the threshold.

@@ -8,6 +8,7 @@ Thresholds (conventional):
     PSI < 0.25  → moderate drift, investigate
     PSI ≥ 0.25  → severe drift, model likely needs retraining
 """
+
 from __future__ import annotations
 
 import numpy as np
@@ -106,9 +107,9 @@ def feature_drift_report(
         Sorted descending by psi.
     """
     shared = [
-        c for c in reference_df.columns
-        if c in current_df.columns
-        and pd.api.types.is_numeric_dtype(reference_df[c])
+        c
+        for c in reference_df.columns
+        if c in current_df.columns and pd.api.types.is_numeric_dtype(reference_df[c])
     ]
     rows = []
     for col in shared:
@@ -117,8 +118,4 @@ def feature_drift_report(
         )
         rows.append({"feature": col, "psi": psi, "severity": drift_severity(psi)})
 
-    return (
-        pd.DataFrame(rows)
-        .sort_values("psi", ascending=False)
-        .reset_index(drop=True)
-    )
+    return pd.DataFrame(rows).sort_values("psi", ascending=False).reset_index(drop=True)

@@ -1,4 +1,5 @@
 """Regression evaluation metrics."""
+
 import numpy as np
 import pandas as pd
 from numpy.typing import ArrayLike
@@ -40,7 +41,9 @@ def regression_report(
     row: dict = {
         "rmse": float(np.sqrt(np.mean(residuals**2))),
         "mae": float(np.mean(np.abs(residuals))),
-        "mape": float(np.mean(np.abs(residuals / yt))) if np.all(yt != 0) else float("nan"),
+        "mape": float(np.mean(np.abs(residuals / yt)))
+        if np.all(yt != 0)
+        else float("nan"),
         "r2": r2,
     }
 

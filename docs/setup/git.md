@@ -9,7 +9,7 @@ It focuses on the commands and workflows you will use most often, plus common mi
 
 :::{note}
 You do **not** need to memorize everything.
-What matters is understanding the *ideas* and knowing where things go wrong.
+What matters is understanding the _ideas_ and knowing where things go wrong.
 :::
 
 ---
@@ -17,19 +17,14 @@ What matters is understanding the *ideas* and knowing where things go wrong.
 ## What Are Git and GitHub?
 
 **Git**
-:   A *version control system* that tracks changes to files over time.
-    It lets you go back to previous versions, compare changes, and work safely.
+: A _version control system_ that tracks changes to files over time.
+It lets you go back to previous versions, compare changes, and work safely.
 
 **GitHub**
-:   A platform that hosts Git repositories and adds:
-    - collaboration tools
-    - issue tracking
-    - pull requests
-    - code review
-    - CI/CD integration
+: A platform that hosts Git repositories and adds: - collaboration tools - issue tracking - pull requests - code review - CI/CD integration
 
 :::{tip}
-Git is the *engine*; GitHub is the *platform* built on top of it.
+Git is the _engine_; GitHub is the _platform_ built on top of it.
 :::
 
 ---
@@ -48,7 +43,7 @@ With Git you can:
 
 - track experiments over time
 - collaborate without overwriting work
-- understand *why* results changed
+- understand _why_ results changed
 - recover from mistakes
 
 ---
@@ -60,6 +55,7 @@ With Git you can:
 A **repository** (repo) is a project tracked by Git.
 
 It contains:
+
 - code
 - notebooks
 - configuration files
@@ -68,10 +64,10 @@ It contains:
 ### Local vs Remote
 
 **Local repository**
-:   The copy on your machine.
+: The copy on your machine.
 
 **Remote repository**
-:   The copy on GitHub.
+: The copy on GitHub.
 
 Changes move between them via **push** and **pull**.
 
@@ -80,6 +76,7 @@ Changes move between them via **push** and **pull**.
 A **commit** is a snapshot of your files at a point in time.
 
 Think of it as:
+
 - "Save with history"
 - atomic and descriptive
 
@@ -88,6 +85,7 @@ Think of it as:
 A **branch** is an independent line of development.
 
 You usually:
+
 - keep `main` clean
 - do work on feature branches
 
@@ -258,6 +256,7 @@ git status
 ```
 
 Shows:
+
 - modified files
 - staged files
 - untracked files
@@ -271,7 +270,7 @@ git add .
 ```
 
 :::{tip}
-`git add .` stages *everything* in the current directory.
+`git add .` stages _everything_ in the current directory.
 Use it carefully.
 :::
 
@@ -282,8 +281,9 @@ git commit -m "Describe what you changed"
 ```
 
 Good commit messages:
+
 - are short
-- explain *why*, not just *what*
+- explain _why_, not just _what_
 
 Bad:
 
@@ -299,7 +299,7 @@ Add feature engineering for housing model
 
 ### Conventional Commits
 
-A widely used convention in professional teams is **Conventional Commits** (Angular style): prefix the commit subject with a *type* that describes the kind of change. This turns your Git history into a machine-readable changelog and lets tools automatically generate release notes.
+A widely used convention in professional teams is **Conventional Commits** (Angular style): prefix the commit subject with a _type_ that describes the kind of change. This turns your Git history into a machine-readable changelog and lets tools automatically generate release notes.
 
 The full form is:
 
@@ -309,16 +309,16 @@ The full form is:
 
 Common types:
 
-| Prefix | Use for |
-|---|---|
-| `feat:` | A new feature or capability |
-| `fix:` | A bug fix |
-| `docs:` | Documentation-only changes |
+| Prefix      | Use for                                     |
+| ----------- | ------------------------------------------- |
+| `feat:`     | A new feature or capability                 |
+| `fix:`      | A bug fix                                   |
+| `docs:`     | Documentation-only changes                  |
 | `refactor:` | Code restructuring with no behaviour change |
-| `test:` | Adding or updating tests |
-| `chore:` | Build tooling, dependency bumps, config |
-| `style:` | Formatting only (whitespace, semicolons) |
-| `perf:` | Performance improvements |
+| `test:`     | Adding or updating tests                    |
+| `chore:`    | Build tooling, dependency bumps, config     |
+| `style:`    | Formatting only (whitespace, semicolons)    |
+| `perf:`     | Performance improvements                    |
 
 Examples:
 
@@ -357,7 +357,7 @@ git pull origin main
 
 ## Branching (Highly Recommended)
 
-The idea: `main` is always in a working state. All new work happens on a *branch*, gets reviewed via a Pull Request, and only merges back to `main` once it passes checks.
+The idea: `main` is always in a working state. All new work happens on a _branch_, gets reviewed via a Pull Request, and only merges back to `main` once it passes checks.
 
 ```{mermaid}
 gitGraph
@@ -449,7 +449,7 @@ git stash pop    # restore them later
 
 ## Git Blame and Code Archaeology
 
-One of the most underused professional habits is **git archaeology**: using Git's history not just to look back at your own recent commits, but to answer questions like *"why is this line here?"* or *"when did this test start being skipped?"*.
+One of the most underused professional habits is **git archaeology**: using Git's history not just to look back at your own recent commits, but to answer questions like _"why is this line here?"_ or _"when did this test start being skipped?"_.
 
 The workhorse command is `git blame`:
 
@@ -469,7 +469,7 @@ Combined with `git log -S "search string"` (which finds every commit where a giv
 In VS Code, the **GitLens** extension makes blame inline: it shows the last-modified author and commit for every line right in the editor. If you take one optional extension, take that one.
 :::
 
-Treat Git history as *documentation*. A well-written commit message is a note to your future self explaining a decision you no longer remember making.
+Treat Git history as _documentation_. A well-written commit message is a note to your future self explaining a decision you no longer remember making.
 
 ---
 
@@ -506,7 +506,7 @@ pip install nbstripout   # or: pixi add nbstripout
 nbstripout --install
 ```
 
-From then on, Git automatically strips outputs from notebooks *on the way into the repo* while leaving them intact in your working copy. Your local runs keep their plots and results; the committed version stays clean. The course repository already ships a `.gitattributes` — you just need to install `nbstripout` locally once.
+From then on, Git automatically strips outputs from notebooks _on the way into the repo_ while leaving them intact in your working copy. Your local runs keep their plots and results; the committed version stays clean. The course repository already ships a `.gitattributes` — you just need to install `nbstripout` locally once.
 
 :::{note}
 This is complementary to the `nbstripout` **pre-commit hook** covered in the [pre-commit guide](pre-commit-hooks.md). The Git filter runs on every operation; the hook runs on commit. Belt and braces.
@@ -550,11 +550,12 @@ git commit --amend
 
 :::{warning}
 Never commit:
+
 - passwords
 - API keys
 - large datasets
 - personal data
-:::
+  :::
 
 ---
 
@@ -563,6 +564,7 @@ Never commit:
 Data does **not** belong in Git.
 
 Use:
+
 - external storage
 - data versioning tools
 - download scripts

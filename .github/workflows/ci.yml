@@ -1,0 +1,51 @@
+name: CI
+
+# On every pull request: run pre-commit hooks and unit tests as independent jobs,
+# then build the Jupyter Book to catch any docs/notebook failures before merge.
+on:
+  pull_request:
+
+concurrency:
+  group: ci-${{ github.event.number }}
+  cancel-in-progress: true
+
+jobs:
+  pre-commit:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - name: Set up pixi
+        uses: prefix-dev/setup-pixi@v0.8.1
+        with:
+          environments: default
+          cache: true
+      - name: Run pre-commit hooks
+        run: pixi run lint
+
+  test:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - name: Set up pixi
+        uses: prefix-dev/setup-pixi@v0.8.1
+        with:
+          environments: default
+          cache: true
+      - name: Run unit tests
+        run: pixi run test
+
+  build:
+    needs: [pre-commit, test]
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - name: Set up pixi
+        uses: prefix-dev/setup-pixi@v0.8.1
+        with:
+          environments: default
+          cache: true
+      # Build with the same base URL as production so links resolve identically.
+      - name: Build docs
+        env:
+          BASE_URL: /fun_ds
+        run: pixi run docs-build

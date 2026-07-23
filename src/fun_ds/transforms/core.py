@@ -1,4 +1,5 @@
 """Core sklearn-compatible transformers."""
+
 import numpy as np
 from numpy.typing import ArrayLike
 from sklearn.base import BaseEstimator, TransformerMixin
@@ -70,4 +71,6 @@ class OutlierClipper(TransformerMixin, BaseEstimator):
 
     def transform(self, X: ArrayLike) -> np.ndarray:
         """Clip values to the fitted bounds."""
-        return np.clip(np.asarray(X, dtype=np.float64), self.lower_bound_, self.upper_bound_)
+        return np.clip(
+            np.asarray(X, dtype=np.float64), self.lower_bound_, self.upper_bound_
+        )

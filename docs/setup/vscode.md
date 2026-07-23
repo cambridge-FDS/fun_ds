@@ -15,7 +15,7 @@ This guide explains:
 - best practices for data science projects
 
 :::{note}
-VS Code is *not* an IDE in the traditional sense. Its functionality comes from extensions.
+VS Code is _not_ an IDE in the traditional sense. Its functionality comes from extensions.
 A good setup makes a huge difference in productivity and reduces friction during the course.
 :::
 
@@ -286,18 +286,18 @@ Using the integrated terminal ensures you are operating in the same project cont
 
 Learning a handful of shortcuts pays for itself within a week. These are the ones every VS Code user should have in muscle memory:
 
-| Shortcut (macOS) | Shortcut (Windows/Linux) | What it does |
-|---|---|---|
-| `Cmd + P` | `Ctrl + P` | Quick open — jump to any file by name |
-| `Cmd + Shift + P` | `Ctrl + Shift + P` | Command Palette — run any VS Code command |
-| `Cmd + B` | `Ctrl + B` | Toggle the sidebar |
-| `Cmd + /` | `Ctrl + /` | Toggle line comment |
-| `Cmd + D` | `Ctrl + D` | Select next occurrence (multi-cursor) |
-| `F2` | `F2` | Rename symbol (across the whole project) |
-| `Cmd + .` | `Ctrl + .` | Quick fix / show code actions |
-| `Cmd + Shift + F` | `Ctrl + Shift + F` | Search across all files |
-| `Cmd + \`` | `Ctrl + \`` | Toggle the integrated terminal |
-| `Cmd + Shift + O` | `Ctrl + Shift + O` | Go to symbol in file |
+| Shortcut (macOS)  | Shortcut (Windows/Linux) | What it does                              |
+| ----------------- | ------------------------ | ----------------------------------------- |
+| `Cmd + P`         | `Ctrl + P`               | Quick open — jump to any file by name     |
+| `Cmd + Shift + P` | `Ctrl + Shift + P`       | Command Palette — run any VS Code command |
+| `Cmd + B`         | `Ctrl + B`               | Toggle the sidebar                        |
+| `Cmd + /`         | `Ctrl + /`               | Toggle line comment                       |
+| `Cmd + D`         | `Ctrl + D`               | Select next occurrence (multi-cursor)     |
+| `F2`              | `F2`                     | Rename symbol (across the whole project)  |
+| `Cmd + .`         | `Ctrl + .`               | Quick fix / show code actions             |
+| `Cmd + Shift + F` | `Ctrl + Shift + F`       | Search across all files                   |
+| `Cmd + \``        | `Ctrl + \``              | Toggle the integrated terminal            |
+| `Cmd + Shift + O` | `Ctrl + Shift + O`       | Go to symbol in file                      |
 
 :::{tip}
 Do **not** try to memorise these all at once. Learn `Cmd+P` and `Cmd+Shift+P` first — from there you can invoke everything else without memorising it.
@@ -307,9 +307,9 @@ Do **not** try to memorise these all at once. Learn `Cmd+P` and `Cmd+Shift+P` fi
 
 ## AI inline suggestions (Claude / Copilot)
 
-If you use an inline AI assistant such as **GitHub Copilot** or **Claude for VS Code**, you will see grey "ghost text" completions as you type. Accepting them is `Tab`. Used well, these tools speed up boilerplate significantly — repetitive plotting code, docstring stubs, unit-test scaffolding — and free you to think about *what* your model does rather than the mechanics of typing it.
+If you use an inline AI assistant such as **GitHub Copilot** or **Claude for VS Code**, you will see grey "ghost text" completions as you type. Accepting them is `Tab`. Used well, these tools speed up boilerplate significantly — repetitive plotting code, docstring stubs, unit-test scaffolding — and free you to think about _what_ your model does rather than the mechanics of typing it.
 
-Used badly, they will confidently produce plausible-looking code that is subtly wrong. In a data science context that is *especially* dangerous: a wrong plot type, a mis-aligned join, or an off-by-one index will not raise an error but will quietly corrupt your analysis.
+Used badly, they will confidently produce plausible-looking code that is subtly wrong. In a data science context that is _especially_ dangerous: a wrong plot type, a mis-aligned join, or an off-by-one index will not raise an error but will quietly corrupt your analysis.
 
 The discipline is simple: **read every line of suggested code before you accept it**. Treat AI completions as suggestions from a fast but junior collaborator, not as ground truth. If you would not sign off on the code coming from a peer, do not sign off on it from an LLM.
 
@@ -331,7 +331,7 @@ Click in the gutter to the left of a line number. A red dot appears — executio
 Once paused, you have three fundamental controls:
 
 - **Step Over (`F10`)** — run the current line, then pause on the next line in the same function. Use this most of the time.
-- **Step Into (`F11`)** — descend into the function call on the current line. Use this when you suspect a bug lives *inside* the function you are about to call.
+- **Step Into (`F11`)** — descend into the function call on the current line. Use this when you suspect a bug lives _inside_ the function you are about to call.
 - **Step Out (`Shift + F11`)** — finish the current function and pause at the caller. Use this when you've stepped into something and realised the bug is elsewhere.
 
 ### Watch variables

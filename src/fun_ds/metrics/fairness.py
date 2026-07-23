@@ -9,6 +9,7 @@ References
 Hardt, M., Price, E., & Srebro, N. (2016). Equality of opportunity in
 supervised learning. NeurIPS 29. [hardt2016equality]
 """
+
 from __future__ import annotations
 
 import numpy as np
@@ -120,11 +121,13 @@ def fairness_report(
     for g in sorted(np.unique(sa)):
         mask = sa == g
         tpr, fpr = _binary_rates(yt[mask], yp[mask])
-        rows.append({
-            "group": g,
-            "n": int(mask.sum()),
-            "positive_rate": float(yp[mask].mean()),
-            "tpr": tpr,
-            "fpr": fpr,
-        })
+        rows.append(
+            {
+                "group": g,
+                "n": int(mask.sum()),
+                "positive_rate": float(yp[mask].mean()),
+                "tpr": tpr,
+                "fpr": fpr,
+            }
+        )
     return pd.DataFrame(rows).set_index("group")

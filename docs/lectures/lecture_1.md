@@ -3,12 +3,13 @@
 :::{admonition} Learning Objectives
 :class: tip
 After this lecture, you will be able to:
+
 - Describe the end-to-end data science workflow and its iterative nature
 - Explain why software engineering discipline is critical for reliable data science
-- Distinguish Breiman's *data modelling* and *algorithmic modelling* cultures
+- Distinguish Breiman's _data modelling_ and _algorithmic modelling_ cultures
 - Transition from monolithic notebook code to modular Python packages
 - Use Git and GitHub for collaborative, reproducible data science
-:::
+  :::
 
 This lecture sets the intellectual and technical foundation for the rest of
 the course. Before we touch a dataset, we introduce the **end-to-end data
@@ -16,7 +17,7 @@ science workflow**, the **technology stack** used throughout the course, and
 the **software engineering principles** that separate research code from
 research infrastructure.
 
-The overarching philosophy: the goal is not merely to *build models* but to
+The overarching philosophy: the goal is not merely to _build models_ but to
 build **reliable, readable, reproducible systems** in which models are one
 component. This mirrors the perspective in
 {cite:t}`huyen2022designing` and {cite:t}`sculley2015hidden`.
@@ -95,7 +96,7 @@ substitute for.
 :::{tip}
 **Economic intuition catches conceptual failures early.** If your training
 data is New York housing but you deploy the model in Albany, no
-cross-validation score will save you — the deployment is *out of sample*.
+cross-validation score will save you — the deployment is _out of sample_.
 Many ML failures are conceptual, not algorithmic.
 :::
 
@@ -158,12 +159,12 @@ deployment — connected by explicit backward arrows: evaluation feeds back
 into business understanding, deployment feeds back into data understanding
 when drift appears. Twenty-five years on, CRISP-DM remains the most widely
 cited framework in industrial data-mining surveys, and its central insight
-— that data projects *never terminate cleanly* — is now embedded in the
+— that data projects _never terminate cleanly_ — is now embedded in the
 MLOps literature. {cite:t}`huyen2022designing` argues that the design of an
 ML system is dominated by the feedback loops between its stages: the
 faster you can iterate from a monitoring signal back to a retrained model,
-the more value the system creates. Treat the diagram in §4 as a *state
-machine* rather than a pipeline; the transitions you cannot short-circuit
+the more value the system creates. Treat the diagram in §4 as a _state
+machine_ rather than a pipeline; the transitions you cannot short-circuit
 in production determine your architecture.
 
 ### Reproducibility as an epistemological principle
@@ -175,7 +176,7 @@ scripted analyses, code review) that operationalise this principle for
 working scientists; each practice makes it possible for a stranger, or
 your future self, to arrive at the same conclusion from the same starting
 point. The deeper argument goes back to Peter Naur's 1985 essay
-[*Programming as Theory Building*](https://pages.cs.wisc.edu/~remzi/Naur.pdf).
+[_Programming as Theory Building_](https://pages.cs.wisc.edu/~remzi/Naur.pdf).
 Naur argues that a working program is only the visible surface of a
 **theory** held in the minds of its authors — a mental model of the
 problem domain, the design decisions taken, and the ones deliberately
@@ -183,7 +184,7 @@ rejected. When that theory is lost (the author leaves, the notes are
 mislaid, the notebook is not runnable), the program becomes uninhabitable
 even if it still executes: nobody can extend it without regressing to
 guesswork. For data science this is doubly true, because the artefact is
-not just code but the *joint state* of code, data, and environment. A
+not just code but the _joint state_ of code, data, and environment. A
 reproducible project preserves the theory, not merely the outputs. This is
 why we insist on version control, environment specification, and
 tests-as-documentation from the first commit: they are the medium in which
@@ -221,14 +222,14 @@ of {cite:t}`wilson2017good` and the maxims of
 
 ## Technology Stack
 
-| Tool | Role |
-|------|------|
-| [Python](https://docs.python.org/3/) | Primary programming language |
-| [Jupyter](https://jupyter.org/) | Exploratory analysis and communication |
-| [VS Code](https://code.visualstudio.com/) | Development environment (see [setup guide](../setup/vscode.md)) |
-| [Pixi](https://pixi.sh/) / conda | Reproducible environments (see [setup guide](../setup/environment_manager.md)) |
-| [Git](https://git-scm.com/) and [GitHub](https://github.com/) | Version control and collaboration (see [setup guide](../setup/git.md)) |
-| [pre-commit](https://pre-commit.com/) | Automated code quality checks (see [setup guide](../setup/pre-commit-hooks.md)) |
+| Tool                                                          | Role                                                                            |
+| ------------------------------------------------------------- | ------------------------------------------------------------------------------- |
+| [Python](https://docs.python.org/3/)                          | Primary programming language                                                    |
+| [Jupyter](https://jupyter.org/)                               | Exploratory analysis and communication                                          |
+| [VS Code](https://code.visualstudio.com/)                     | Development environment (see [setup guide](../setup/vscode.md))                 |
+| [Pixi](https://pixi.sh/) / conda                              | Reproducible environments (see [setup guide](../setup/environment_manager.md))  |
+| [Git](https://git-scm.com/) and [GitHub](https://github.com/) | Version control and collaboration (see [setup guide](../setup/git.md))          |
+| [pre-commit](https://pre-commit.com/)                         | Automated code quality checks (see [setup guide](../setup/pre-commit-hooks.md)) |
 
 Python is the dominant language for machine learning because of its
 ecosystem — NumPy {cite}`harris2020numpy`, pandas {cite}`mckinney2010pandas`,
@@ -317,7 +318,7 @@ for a minimal, working example. Notebooks in later lectures import from it direc
 
 ## Orchestration Scripts
 
-An orchestration script (or *entry point*):
+An orchestration script (or _entry point_):
 
 - runs the pipeline in the correct order (data → features → train → evaluate)
 - separates **operational** logic (what runs on a schedule) from **exploratory**
@@ -351,7 +352,7 @@ Good data science requires **trust in your code**:
 - collaborators must be able to read and extend your work
 
 :::{note}
-Experimentation is science — and science requires *reliability*. Half the
+Experimentation is science — and science requires _reliability_. Half the
 value of a test suite is that it lets you make bold changes without fear.
 :::
 
@@ -382,7 +383,7 @@ flowchart LR
 
 :::{tip}
 Version control is "undo" with memory. The real value is not what it
-prevents — it is the *confidence to experiment* it enables.
+prevents — it is the _confidence to experiment_ it enables.
 :::
 
 For an in-depth walkthrough, see [Lecture 2, §1](lecture_2.ipynb) and the
@@ -395,10 +396,10 @@ The pull request is a technical artefact, but the practice around it is a
 fundamentally a communication act — first with the machine, and then, more
 importantly, with the humans who will read the code afterwards. Code
 review is where that second audience actually shows up. A good review
-serves three overlapping purposes: it *catches bugs* the author cannot see
-because they wrote the code; it *transfers knowledge* about the codebase
+serves three overlapping purposes: it _catches bugs_ the author cannot see
+because they wrote the code; it _transfers knowledge_ about the codebase
 across the team, spreading the "theory of the program" more widely; and
-it *establishes norms* — how we name things, how we handle errors, what
+it _establishes norms_ — how we name things, how we handle errors, what
 counts as done. In a research group the payoff is compounded: reviewers
 often catch statistical or scientific errors that would never be flagged
 by automated tests. Ask for reviews early, keep pull requests small (a few
@@ -433,7 +434,7 @@ outputs:
   work.
 
 FAIR is complementary to reproducibility: reproducibility asks whether
-*your* analysis can be re-executed; FAIR asks whether *others* can build
+_your_ analysis can be re-executed; FAIR asks whether _others_ can build
 on the resources your project produced. Applying both raises the marginal
 value of every dataset your project curates.
 
@@ -445,21 +446,23 @@ value of every dataset your project curates.
 :class: tip
 Take any notebook you have written previously (or a sample from
 [Kaggle](https://www.kaggle.com/)). Refactor it as follows:
+
 1. Move every function into a file `src/mypkg/utils.py`.
 2. Add a `pyproject.toml` at the project root (use the `fun_ds` one as a template).
 3. `pip install -e .`
 4. Confirm you can `from mypkg.utils import <your function>` from a fresh notebook.
-Compare notebook length before and after: what has been simplified?
-:::
+   Compare notebook length before and after: what has been simplified?
+   :::
 
 :::{admonition} Exercise 1.2 — Practice Git workflow
 :class: tip
+
 1. Fork the [`fun_ds` repository](https://github.com/cambridge-FDS/fun_ds).
 2. Create a branch `feature/typos-<yourname>`.
 3. Fix a typo you find (there will be some — send a PR!) and commit.
 4. Push and open a pull request against `main`.
-This is the exact workflow used by every project in the course.
-:::
+   This is the exact workflow used by every project in the course.
+   :::
 
 :::{admonition} Exercise 1.3 — Diagnose the pipeline
 :class: tip
@@ -474,6 +477,7 @@ would not be caught by a passing test on training data.
 
 :::{admonition} Key Takeaways
 :class: important
+
 - Data science is an **engineering discipline** as much as a statistical one.
 - The **two cultures** {cite}`breiman2001statistical` frame the tension
   between causal econometrics and predictive ML; both matter.
@@ -481,7 +485,7 @@ would not be caught by a passing test on training data.
 - Notebooks are a **tool**, not a foundation — extract logic into a package.
 - **Git and pull requests** are the operating system of collaboration.
 - Strong SWE skills amplify data-science impact and make experiments trustworthy.
-:::
+  :::
 
 ---
 
@@ -492,7 +496,7 @@ would not be caught by a passing test on training data.
 - {cite:t}`james2021introduction` — accessible companion to Hastie et al.
 - {cite:t}`huyen2022designing` — end-to-end ML system design.
 - {cite:t}`wilson2017good` — Good Enough Practices in Scientific Computing.
-- Peter Naur, *[Programming as Theory Building](https://pages.cs.wisc.edu/~remzi/Naur.pdf)* (1985).
+- Peter Naur, _[Programming as Theory Building](https://pages.cs.wisc.edu/~remzi/Naur.pdf)_ (1985).
 
 ## Looking Ahead
 

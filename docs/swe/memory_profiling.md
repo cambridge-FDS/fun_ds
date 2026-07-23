@@ -10,9 +10,10 @@ Memray is particularly useful because it tracks allocations at a low level and c
 
 :::{note}
 Memory profiling is different from timing profiling:
-- Timing profiling asks: *Where is my code slow?*
-- Memory profiling asks: *Where is my code allocating, retaining, or leaking memory?*
-:::
+
+- Timing profiling asks: _Where is my code slow?_
+- Memory profiling asks: _Where is my code allocating, retaining, or leaking memory?_
+  :::
 
 ---
 
@@ -27,7 +28,7 @@ Profile memory when you see:
 - notebook sessions that become sluggish after repeated runs
 
 :::{tip}
-A common pattern is: *"The code runs fine once, but gets worse each time I run the pipeline."*
+A common pattern is: _"The code runs fine once, but gets worse each time I run the pipeline."_
 That's often a sign of retained objects, caches, global state, or leaks in extensions.
 :::
 
@@ -144,10 +145,11 @@ It uses internal allocators and memory pools for many small objects, and only so
 
 :::{warning}
 "High memory usage" can be caused by:
+
 - many allocations that are later freed (high churn)
 - or allocations that remain live (retained/leaked)
-You need to distinguish *allocation rate* vs *retained memory*.
-:::
+  You need to distinguish _allocation rate_ vs _retained memory_.
+  :::
 
 ---
 
@@ -203,28 +205,33 @@ pytest-memray can analyze allocations made during a test that are not freed by t
 
 :::{tip}
 This is one of the cleanest ways to stop memory regressions early:
+
 - add the plugin
 - run it in CI
 - set sensible thresholds for critical pipelines
-:::
+  :::
 
 ---
 
 ## Practical Tips and Best Practices
 
 1. Profile the smallest reproducible scenario
+
    - isolate one pipeline stage or one function
    - reduce dataset size while preserving behavior
 
 2. Always save the `.bin` artifacts
+
    - they are useful for comparisons
    - store them with run metadata (command, commit hash, dataset slice)
 
 3. Compare changes
+
    - run Memray before and after a refactor
    - confirm the hotspot actually moved or shrank
 
 4. Don't optimize blindly
+
    - the biggest bar in a flame graph is your best first target
 
 5. Be mindful of notebooks
@@ -242,7 +249,7 @@ That may be normal due to Python's allocator pooling of small objects. Understan
 ### "My report shows a lot of allocations in libraries"
 
 Often true in data science (NumPy, pandas, BLAS, etc.).
-The key question is: *why is your code calling those libraries that way?*
+The key question is: _why is your code calling those libraries that way?_
 
 Try:
 

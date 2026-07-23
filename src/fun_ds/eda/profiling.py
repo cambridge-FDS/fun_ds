@@ -1,5 +1,5 @@
 """DataFrame profiling for exploratory data analysis."""
-import numpy as np
+
 import pandas as pd
 
 
@@ -65,11 +65,13 @@ class DataProfiler:
         """
         self._check_fitted()
         missing = self._df.isnull().sum()
-        result = pd.DataFrame({
-            "count": missing,
-            "pct": missing / self._n_rows * 100,
-            "dtype": self._df.dtypes,
-        })
+        result = pd.DataFrame(
+            {
+                "count": missing,
+                "pct": missing / self._n_rows * 100,
+                "dtype": self._df.dtypes,
+            }
+        )
         return result[result["count"] > 0].sort_values("count", ascending=False)
 
     def distribution_summary(self) -> pd.DataFrame:
@@ -96,14 +98,16 @@ class DataProfiler:
         upper = q3 + self.outlier_iqr_factor * iqr
         outlier_mask = (num < lower) | (num > upper)
 
-        return pd.DataFrame({
-            "mean": num.mean(),
-            "std": num.std(),
-            "skewness": num.skew(),
-            "kurtosis": num.kurt(),  # excess kurtosis
-            "iqr": iqr,
-            "outlier_pct": outlier_mask.mean() * 100,
-        })
+        return pd.DataFrame(
+            {
+                "mean": num.mean(),
+                "std": num.std(),
+                "skewness": num.skew(),
+                "kurtosis": num.kurt(),  # excess kurtosis
+                "iqr": iqr,
+                "outlier_pct": outlier_mask.mean() * 100,
+            }
+        )
 
     def high_correlation_pairs(self, threshold: float = 0.8) -> pd.DataFrame:
         """Return pairs of numeric columns whose absolute correlation exceeds threshold.
@@ -127,7 +131,7 @@ class DataProfiler:
         rows = []
         cols = corr.columns.tolist()
         for i, a in enumerate(cols):
-            for b in cols[i + 1:]:
+            for b in cols[i + 1 :]:
                 val = corr.loc[a, b]
                 if abs(val) >= threshold:
                     rows.append({"feature_a": a, "feature_b": b, "correlation": val})
@@ -145,6 +149,7 @@ class DataProfiler:
         return self._n_rows, self._n_cols
 
     def __repr__(self) -> str:
+        """Return a concise summary of the profiler's fitted state."""
         if not hasattr(self, "_df"):
             return "DataProfiler(not fitted)"
         return (
