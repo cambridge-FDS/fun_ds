@@ -1,5 +1,9 @@
 # IDE: Visual Studio Code for Data Science
 
+**Previous:** [Environments](environment_manager.md) | **Next:** [Git](git.md)
+
+---
+
 This course uses **Visual Studio Code (VS Code)** as the recommended editor for data science work.
 VS Code strikes a good balance between simplicity and power: it works well for beginners while scaling to professional workflows.
 
@@ -274,6 +278,76 @@ Use it to:
 
 :::{tip}
 Using the integrated terminal ensures you are operating in the same project context as your editor.
+:::
+
+---
+
+## Keyboard shortcuts that will save your life
+
+Learning a handful of shortcuts pays for itself within a week. These are the ones every VS Code user should have in muscle memory:
+
+| Shortcut (macOS) | Shortcut (Windows/Linux) | What it does |
+|---|---|---|
+| `Cmd + P` | `Ctrl + P` | Quick open — jump to any file by name |
+| `Cmd + Shift + P` | `Ctrl + Shift + P` | Command Palette — run any VS Code command |
+| `Cmd + B` | `Ctrl + B` | Toggle the sidebar |
+| `Cmd + /` | `Ctrl + /` | Toggle line comment |
+| `Cmd + D` | `Ctrl + D` | Select next occurrence (multi-cursor) |
+| `F2` | `F2` | Rename symbol (across the whole project) |
+| `Cmd + .` | `Ctrl + .` | Quick fix / show code actions |
+| `Cmd + Shift + F` | `Ctrl + Shift + F` | Search across all files |
+| `Cmd + \`` | `Ctrl + \`` | Toggle the integrated terminal |
+| `Cmd + Shift + O` | `Ctrl + Shift + O` | Go to symbol in file |
+
+:::{tip}
+Do **not** try to memorise these all at once. Learn `Cmd+P` and `Cmd+Shift+P` first — from there you can invoke everything else without memorising it.
+:::
+
+---
+
+## AI inline suggestions (Claude / Copilot)
+
+If you use an inline AI assistant such as **GitHub Copilot** or **Claude for VS Code**, you will see grey "ghost text" completions as you type. Accepting them is `Tab`. Used well, these tools speed up boilerplate significantly — repetitive plotting code, docstring stubs, unit-test scaffolding — and free you to think about *what* your model does rather than the mechanics of typing it.
+
+Used badly, they will confidently produce plausible-looking code that is subtly wrong. In a data science context that is *especially* dangerous: a wrong plot type, a mis-aligned join, or an off-by-one index will not raise an error but will quietly corrupt your analysis.
+
+The discipline is simple: **read every line of suggested code before you accept it**. Treat AI completions as suggestions from a fast but junior collaborator, not as ground truth. If you would not sign off on the code coming from a peer, do not sign off on it from an LLM.
+
+---
+
+## Debugger Basics
+
+Most data science students never learn to use a real debugger and rely on `print()` forever. This works, until it doesn't. The moment your notebook has a bug three function calls deep inside a `pandas` `apply`, `print`-debugging becomes miserable. Learn the VS Code debugger — even a shallow familiarity pays huge dividends.
+
+### Breakpoints
+
+Click in the gutter to the left of a line number. A red dot appears — execution will pause there when you run in debug mode.
+
+- **Run with debugger:** `F5` (or the "Run and Debug" panel on the left).
+- **Continue to next breakpoint:** `F5` again.
+
+### Stepping
+
+Once paused, you have three fundamental controls:
+
+- **Step Over (`F10`)** — run the current line, then pause on the next line in the same function. Use this most of the time.
+- **Step Into (`F11`)** — descend into the function call on the current line. Use this when you suspect a bug lives *inside* the function you are about to call.
+- **Step Out (`Shift + F11`)** — finish the current function and pause at the caller. Use this when you've stepped into something and realised the bug is elsewhere.
+
+### Watch variables
+
+The **Variables** panel shows all locals at the current frame. To track a specific expression (say, `df["age"].isna().sum()`), add it to the **Watch** panel — it re-evaluates every time execution pauses. This is often faster than typing `print()` after each change.
+
+### Conditional breakpoints
+
+Right-click a breakpoint → **Edit Breakpoint** → set a condition, e.g. `i == 42` or `row["price"] < 0`. Execution only pauses when the condition is true. Indispensable for bugs that only manifest for a single row out of millions.
+
+### Debugging notebooks
+
+Jupyter notebooks in VS Code support the same debugger. Click the debug icon next to a cell, or use `Debug Cell` from the cell menu. Breakpoints work identically.
+
+:::{tip}
+The first hour you spend learning the debugger feels slow. Every hour after that, it saves you time. Do it in the first two weeks of the course.
 :::
 
 ---

@@ -1,5 +1,21 @@
 # Environment Management: micromamba and pixi
 
+## Why use environments at all?
+
+Before we get to the tools, the *why*: a Python environment is an isolated set of packages and a specific Python version, scoped to a single project. Without one, you install everything into your system Python and quickly hit trouble.
+
+Three forces conspire against a "just pip install it" workflow:
+
+- **Dependencies rot.** Libraries release breaking changes constantly. A notebook that ran fine six months ago may not import today if `pandas`, `scikit-learn`, or `numpy` have moved on. Pinning versions freezes a working combination in place.
+- **Operating systems differ.** macOS (Intel vs. Apple Silicon), Linux, and Windows resolve binaries differently. A wheel that works on your laptop may not exist for a classmate's machine unless the environment manager knows how to solve per-platform.
+- **Hardware differs.** CUDA vs. CPU builds, ARM vs. x86, AVX support — the same "package" is actually a family of builds. An environment manager picks the right one.
+
+The goal is a **reproducible build**: given the same specification, anyone, anywhere, at any time gets the same working environment. This is the same principle Martin Kleppmann calls out in *Designing Data-Intensive Applications* — reproducibility is a system property you engineer for, not a happy accident.
+
+:::{seealso}
+For a broader take on why reproducibility, project layout, and automation matter in scientific work, see {cite}`wilson2017good` — "Good Enough Practices in Scientific Computing".
+:::
+
 This course uses Python packages (NumPy, pandas, scikit-learn, Jupyter, ...). To keep your setup **reliable** and **reproducible**, we recommend using a modern environment manager instead of installing everything globally.
 
 This guide explains two good options:
@@ -12,17 +28,50 @@ If you are new to environments: an environment is an isolated set of packages an
 This prevents "it works on my machine" problems and avoids conflicts between projects.
 :::
 
-:::{admonition} Day 1 Checklist
-:class: tip
+## Day 1 Checklist
 
-Here are all the steps to get your development environment ready for this course — in order:
+This is the **single source of truth** for getting set up before Lecture 1. Work through it top-to-bottom on your own laptop — you should finish in roughly **60–90 minutes** including downloads.
 
-1. **Install pixi** (this guide, Option B)
-2. **Clone the course repo** and run `pixi install`
-3. **Install VS Code + extensions** (see [VS Code guide](vscode.md))
-4. **Configure Git identity** (see [Git guide](git.md))
-5. **Set up GitHub authentication** (see [Git guide](git.md))
-6. **Install pre-commit hooks** (see [pre-commit guide](pre-commit-hooks.md))
+```{mermaid}
+flowchart LR
+    A[Install pixi<br/>10 min] --> B[Clone course repo<br/>5 min]
+    B --> C[pixi install<br/>10 min]
+    C --> D[Install VS Code<br/>+ extensions<br/>15 min]
+    D --> E[Configure Git<br/>identity + auth<br/>15 min]
+    E --> F[Install<br/>pre-commit hooks<br/>5 min]
+    F --> G[Verify:<br/>pixi run pytest -q<br/>5 min]
+```
+
+| # | Step | Time | Where |
+|---|------|------|-------|
+| 1 | **Install pixi** | ~10 min | This guide, [Option B](#option-b-pixi-recommended) |
+| 2 | **Clone the course repo** | ~5 min | [Git guide](git.md) |
+| 3 | **Run `pixi install`** in the repo | ~10 min (depends on network) | This guide |
+| 4 | **Install VS Code + core extensions** | ~15 min | [VS Code guide](vscode.md) |
+| 5 | **Configure Git identity** | ~5 min | [Git guide](git.md) |
+| 6 | **Set up GitHub authentication (SSH or PAT)** | ~10 min | [Git guide](git.md) |
+| 7 | **Install pre-commit hooks** | ~5 min | [pre-commit guide](pre-commit-hooks.md) |
+| 8 | **Verify your setup** | ~5 min | See below |
+
+### Step 8: Verify your setup
+
+From the root of the course repository, run:
+
+```bash
+pixi run pytest -q
+```
+
+If the test suite passes (or reports "no tests ran" cleanly, depending on the state of the repo), your environment is wired up correctly. As a secondary sanity check:
+
+```bash
+pixi list | head
+pixi run python -c "import numpy; print(numpy.__version__)"
+```
+
+The first command shows the top of the resolved package list; the second confirms Python can import a core dependency and prints its version. If both work, you are done.
+
+:::{tip}
+If any step fails, jump to the [Troubleshooting](#day-1-troubleshooting-top-5-issues) section at the bottom of this page **before** asking on the forum — the fix is almost always there.
 :::
 
 ---
@@ -231,6 +280,24 @@ Run Python inside the environment:
 pixi run python --version
 ```
 
+### Verifying your installation
+
+Once `pixi install` finishes, sanity-check what actually got installed:
+
+```bash
+pixi list | head
+```
+
+This prints the resolved packages (name, version, build). If you see your dependencies with concrete version numbers, the environment is real.
+
+Verify Python can import a core package:
+
+```bash
+pixi run python -c "import numpy; print(numpy.__version__)"
+```
+
+If this prints a version string, you are done. If it errors, your interpreter is probably pointing outside the pixi environment — always run through `pixi run ...` or from inside `pixi shell`.
+
 ### `.gitignore` for pixi projects
 
 pixi creates a `.pixi/` directory for the local environment. This should **not** be committed to Git.
@@ -342,14 +409,74 @@ If you already use conda/mamba and prefer that style, **micromamba is a solid al
 
 ---
 
-## Troubleshooting tips
+## Day 1 Troubleshooting: Top 5 Issues
 
-- If commands are not found, restart your terminal or ensure the tool is on your PATH.
-- If `pixi install` fails with an SSL or certificate error, this is common on university networks. Try connecting via a different network, disabling VPN, or asking IT about certificate configuration.
-- If the pixi environment is not visible in VS Code, see the [VS Code guide](vscode.md) for how to point the interpreter selector to `.pixi/envs/default/`.
-- If you are on Windows, prefer PowerShell or Windows Terminal and keep paths short (avoid deeply nested folders).
+These are the problems most students hit. Try these fixes **before** posting on the forum — nine times out of ten one of them resolves the issue.
+
+### `pixi: command not found` after installation
+
+The installer put pixi in a directory (e.g. `~/.pixi/bin`) that isn't on your `PATH` yet, or your current shell is caching the old `PATH`.
+
+**Fix:** Close the terminal and open a fresh one. If that still fails, add the pixi bin directory to your shell profile:
+
+```bash
+# ~/.zshrc or ~/.bashrc
+export PATH="$HOME/.pixi/bin:$PATH"
+```
+
+Then `source` the file or open a new terminal.
+
+### `pixi install` fails with SSL / certificate errors
+
+Extremely common on university networks (Cambridge Wi-Fi included) and behind corporate proxies. The resolver can't verify the certificate chain when downloading from conda-forge.
+
+**Fix, in order of preference:**
+
+- Switch to a different network (mobile hotspot works as a diagnostic).
+- Disable any active VPN and retry.
+- Ask IT about the correct SSL/CA bundle for your machine and set `SSL_CERT_FILE` accordingly.
+
+### VS Code doesn't see the pixi environment
+
+The interpreter picker only lists environments it knows how to find, and `.pixi/envs/default/` is inside your project — not a global location.
+
+**Fix:** Open the Command Palette → `Python: Select Interpreter` → **Enter interpreter path...**, and point it to:
+
+```text
+<project-root>/.pixi/envs/default/bin/python     (macOS/Linux)
+<project-root>/.pixi/envs/default/python.exe     (Windows)
+```
+
+For notebooks, do the same via the kernel picker (top-right of the notebook). See the [VS Code guide](vscode.md) for details.
+
+### Imports fail even though `pixi install` succeeded
+
+Almost always means you ran `python` from **outside** the pixi environment — e.g. your terminal's default `python` is the system one.
+
+**Fix:** Prefix every command with `pixi run`, or start an interactive session with `pixi shell`. To confirm which Python you are using:
+
+```bash
+pixi run python -c "import sys; print(sys.executable)"
+```
+
+The path should contain `.pixi/envs/default/`.
+
+### Windows path or permission errors
+
+Long paths (`> 260 chars`) and OneDrive-managed folders both cause pixi to fail in confusing ways.
+
+**Fix:** Clone the course repo into a **short path** near the drive root (e.g. `C:\dev\fun_ds`), avoid OneDrive/Documents, and prefer **Windows Terminal + PowerShell** over `cmd.exe`.
 
 :::{warning}
 Avoid mixing tools for the same project (e.g., don't use pip globally and then expect your environment manager to "see" it).
 Always install packages via your chosen tool to keep the environment consistent.
 :::
+
+### Other quick tips
+
+- If the pixi environment is not visible in VS Code, see the [VS Code guide](vscode.md) for how to point the interpreter selector to `.pixi/envs/default/`.
+- If you are on Windows, prefer PowerShell or Windows Terminal and keep paths short (avoid deeply nested folders).
+
+---
+
+**Next:** [VS Code](vscode.md)

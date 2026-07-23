@@ -1,5 +1,9 @@
 # GitHub and Git — A Practical Introduction for Data Science Students
 
+**Previous:** [VS Code](vscode.md) | **Next:** [Pre-commit Hooks](pre-commit-hooks.md)
+
+---
+
 This guide introduces **Git** (version control) and **GitHub** (a hosting and collaboration platform) from a **data science perspective**.
 It focuses on the commands and workflows you will use most often, plus common mistakes to avoid.
 
@@ -281,9 +285,51 @@ Good commit messages:
 - are short
 - explain *why*, not just *what*
 
-Bad: fix
+Bad:
 
-Good: Add feature engineering for housing model
+```text
+fix
+```
+
+Good:
+
+```text
+Add feature engineering for housing model
+```
+
+### Conventional Commits
+
+A widely used convention in professional teams is **Conventional Commits** (Angular style): prefix the commit subject with a *type* that describes the kind of change. This turns your Git history into a machine-readable changelog and lets tools automatically generate release notes.
+
+The full form is:
+
+```text
+<type>(<optional scope>): <short description>
+```
+
+Common types:
+
+| Prefix | Use for |
+|---|---|
+| `feat:` | A new feature or capability |
+| `fix:` | A bug fix |
+| `docs:` | Documentation-only changes |
+| `refactor:` | Code restructuring with no behaviour change |
+| `test:` | Adding or updating tests |
+| `chore:` | Build tooling, dependency bumps, config |
+| `style:` | Formatting only (whitespace, semicolons) |
+| `perf:` | Performance improvements |
+
+Examples:
+
+```text
+feat: add k-fold cross-validation to housing model
+fix: correct off-by-one index in feature scaler
+docs: expand Day 1 checklist with troubleshooting
+refactor(model): extract training loop into utils.py
+```
+
+You do not need to use conventional commits religiously in this course, but adopting the habit early makes your work look more professional and prepares you for teams that mandate it.
 
 ---
 
@@ -310,6 +356,22 @@ git pull origin main
 ---
 
 ## Branching (Highly Recommended)
+
+The idea: `main` is always in a working state. All new work happens on a *branch*, gets reviewed via a Pull Request, and only merges back to `main` once it passes checks.
+
+```{mermaid}
+gitGraph
+    commit id: "initial"
+    commit id: "add data loader"
+    branch feature-cleaning
+    checkout feature-cleaning
+    commit id: "drop NaNs"
+    commit id: "encode categoricals"
+    checkout main
+    commit id: "hotfix: typo"
+    merge feature-cleaning id: "PR merged"
+    commit id: "next work"
+```
 
 Create and switch to a branch:
 
@@ -382,6 +444,73 @@ Park in-progress work temporarily:
 git stash        # save current changes
 git stash pop    # restore them later
 ```
+
+---
+
+## Git Blame and Code Archaeology
+
+One of the most underused professional habits is **git archaeology**: using Git's history not just to look back at your own recent commits, but to answer questions like *"why is this line here?"* or *"when did this test start being skipped?"*.
+
+The workhorse command is `git blame`:
+
+```bash
+git blame src/features.py
+```
+
+For every line it shows the commit hash, author, date, and message that introduced it. From there you can jump to the full commit:
+
+```bash
+git show <commit-hash>
+```
+
+Combined with `git log -S "search string"` (which finds every commit where a given string was added or removed), you can trace the full evolution of a function or a bug. This is invaluable when inheriting a codebase — including the course repository.
+
+:::{tip}
+In VS Code, the **GitLens** extension makes blame inline: it shows the last-modified author and commit for every line right in the editor. If you take one optional extension, take that one.
+:::
+
+Treat Git history as *documentation*. A well-written commit message is a note to your future self explaining a decision you no longer remember making.
+
+---
+
+## Finding Regressions with `git bisect`
+
+A **regression** is when something that used to work stops working. `git bisect` finds the exact commit that introduced it — using binary search, so even hundreds of commits between "known good" and "known bad" only take ~10 steps.
+
+```bash
+git bisect start
+git bisect bad                   # current commit is broken
+git bisect good <old-commit>     # this commit was fine
+```
+
+Git checks out a commit halfway between the two; you test it, run `git bisect good` or `git bisect bad`, and it narrows the range. When it lands on the culprit, run `git bisect reset` to return to your branch. Learning `bisect` once and using it twice in your career pays for the fifteen minutes it takes to read the docs.
+
+---
+
+## `.gitattributes` for Notebooks
+
+Notebooks store execution outputs, cell IDs, and metadata inside the `.ipynb` JSON. If you commit these, every re-run produces a huge diff and merge conflicts become almost impossible to resolve.
+
+The clean solution is a **`nbstripout` Git filter**, configured via `.gitattributes` at the repository root:
+
+```text
+# .gitattributes
+*.ipynb filter=nbstripout
+*.ipynb diff=ipynb
+```
+
+Then, once per clone:
+
+```bash
+pip install nbstripout   # or: pixi add nbstripout
+nbstripout --install
+```
+
+From then on, Git automatically strips outputs from notebooks *on the way into the repo* while leaving them intact in your working copy. Your local runs keep their plots and results; the committed version stays clean. The course repository already ships a `.gitattributes` — you just need to install `nbstripout` locally once.
+
+:::{note}
+This is complementary to the `nbstripout` **pre-commit hook** covered in the [pre-commit guide](pre-commit-hooks.md). The Git filter runs on every operation; the hook runs on commit. Belt and braces.
+:::
 
 ---
 

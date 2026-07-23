@@ -14,8 +14,23 @@ project:
   github: https://github.com/cambridge-FDS/fun_ds
   settings:
     output_stderr: remove
+  numbering:
+    headings: true
   bibliography:
     - references.bib
+  abbreviations:
+    ML: Machine Learning
+    DS: Data Science
+    EDA: Exploratory Data Analysis
+    CV: Cross-Validation
+    GLM: Generalised Linear Model
+    PDP: Partial Dependence Plot
+    ALE: Accumulated Local Effects
+    SHAP: SHapley Additive exPlanations
+    EBM: Explainable Boosting Machine
+    ONNX: Open Neural Network Exchange
+    API: Application Programming Interface
+    CI: Continuous Integration
   toc:
     - file: intro.md
     - title: Getting Started
@@ -45,6 +60,11 @@ site:
   options:
     logo: Fun_DS.png
     favicon: Fun_DS.png
+    hide_toc: false
+    hide_search: false
+    hide_footer_links: false
   actions:
     - title: GitHub
       url: https://github.com/cambridge-FDS/fun_ds
+    - title: Cambridge MPhil EDS
+      url: https://www.econ.cam.ac.uk/apply/postgraduate/courses/mphil-data

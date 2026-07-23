@@ -1,48 +1,872 @@
+%% =============================================================================
+%% Foundational statistical learning & data science
+%% =============================================================================
+
 @article{breiman2001statistical,
-  title={Statistical modeling: The two cultures},
-  author={Breiman, Leo},
-  journal={Statistical Science},
-  volume={16},
-  number={3},
-  pages={199--231},
-  year={2001},
-  publisher={Institute of Mathematical Statistics}
+  title   = {Statistical Modeling: The Two Cultures},
+  author  = {Breiman, Leo},
+  journal = {Statistical Science},
+  volume  = {16},
+  number  = {3},
+  pages   = {199--231},
+  year    = {2001},
+  doi     = {10.1214/ss/1009213726},
+  publisher = {Institute of Mathematical Statistics}
 }
 
 @book{hastie2009elements,
-  title={The Elements of Statistical Learning},
-  author={Hastie, Trevor and Tibshirani, Robert and Friedman, Jerome},
-  year={2009},
-  edition={2},
-  publisher={Springer}
+  title     = {The Elements of Statistical Learning: Data Mining, Inference, and Prediction},
+  author    = {Hastie, Trevor and Tibshirani, Robert and Friedman, Jerome},
+  year      = {2009},
+  edition   = {2},
+  publisher = {Springer},
+  address   = {New York},
+  isbn      = {978-0-387-84857-0},
+  doi       = {10.1007/978-0-387-84858-7}
 }
 
 @book{james2021introduction,
-  title={An Introduction to Statistical Learning},
-  author={James, Gareth and Witten, Daniela and Hastie, Trevor and Tibshirani, Robert},
-  year={2021},
-  edition={2},
-  publisher={Springer}
+  title     = {An Introduction to Statistical Learning: with Applications in {R}},
+  author    = {James, Gareth and Witten, Daniela and Hastie, Trevor and Tibshirani, Robert},
+  year      = {2021},
+  edition   = {2},
+  publisher = {Springer},
+  address   = {New York},
+  isbn      = {978-1-0716-1417-4}
+}
+
+@book{murphy2022probabilistic,
+  title     = {Probabilistic Machine Learning: An Introduction},
+  author    = {Murphy, Kevin P.},
+  year      = {2022},
+  publisher = {MIT Press},
+  address   = {Cambridge, MA},
+  url       = {https://probml.github.io/pml-book/book1.html}
+}
+
+@book{bishop2006pattern,
+  title     = {Pattern Recognition and Machine Learning},
+  author    = {Bishop, Christopher M.},
+  year      = {2006},
+  publisher = {Springer},
+  address   = {New York},
+  isbn      = {978-0-387-31073-2},
+  url       = {https://www.microsoft.com/en-us/research/publication/pattern-recognition-machine-learning/}
+}
+
+@book{goodfellow2016deep,
+  title     = {Deep Learning},
+  author    = {Goodfellow, Ian and Bengio, Yoshua and Courville, Aaron},
+  year      = {2016},
+  publisher = {MIT Press},
+  address   = {Cambridge, MA},
+  isbn      = {978-0-262-03561-3},
+  url       = {https://www.deeplearningbook.org/}
+}
+
+@article{wolpert1996nofreelunch,
+  title   = {The Lack of A Priori Distinctions Between Learning Algorithms},
+  author  = {Wolpert, David H.},
+  journal = {Neural Computation},
+  volume  = {8},
+  number  = {7},
+  pages   = {1341--1390},
+  year    = {1996},
+  doi     = {10.1162/neco.1996.8.7.1341}
+}
+
+@book{wickham2023r4ds,
+  title     = {R for Data Science},
+  author    = {Wickham, Hadley and {\c{C}}etinkaya-Rundel, Mine and Grolemund, Garrett},
+  year      = {2023},
+  edition   = {2},
+  publisher = {O'Reilly},
+  url       = {https://r4ds.hadley.nz/}
+}
+
+@article{wickham2014tidy,
+  title   = {Tidy Data},
+  author  = {Wickham, Hadley},
+  journal = {Journal of Statistical Software},
+  volume  = {59},
+  number  = {10},
+  year    = {2014},
+  doi     = {10.18637/jss.v059.i10}
+}
+
+%% =============================================================================
+%% Feature engineering & imputation
+%% =============================================================================
+
+@book{kuhn2019feature,
+  title     = {Feature Engineering and Selection: A Practical Approach for Predictive Models},
+  author    = {Kuhn, Max and Johnson, Kjell},
+  year      = {2019},
+  publisher = {CRC Press},
+  url       = {http://www.feat.engineering/}
 }
 
 @article{bertsimas2024impute,
-  title={Impute-then-Regress: A Simple but Effective Approach for Missing Data},
-  author={Bertsimas, Dimitris and Pawlowski, Colin and Zhuo, Ying Daisy},
-  journal={Journal of Machine Learning Research},
-  year={2024}
+  title   = {Simple Imputation Rules for Prediction with Missing Data:
+             Contrasting Theoretical Guarantees with Empirical Performance},
+  author  = {Bertsimas, Dimitris and Pawlowski, Colin and Zhuo, Ying Daisy},
+  journal = {Journal of Machine Learning Research},
+  year    = {2024}
 }
 
-@article{lundberg2017shap,
-  title={A Unified Approach to Interpreting Model Predictions},
-  author={Lundberg, Scott M and Lee, Su-In},
-  journal={Advances in Neural Information Processing Systems},
-  volume={30},
-  year={2017}
+@article{little2019statistical,
+  title     = {Statistical Analysis with Missing Data},
+  author    = {Little, Roderick J. A. and Rubin, Donald B.},
+  year      = {2019},
+  edition   = {3},
+  publisher = {Wiley}
 }
 
-@article{molnar2020interpretable,
-  title={Interpretable Machine Learning},
-  author={Molnar, Christoph},
-  year={2020},
-  url={https://christophm.github.io/interpretable-ml-book/}
+%% =============================================================================
+%% Modelling
+%% =============================================================================
+
+@article{friedman2001greedy,
+  title   = {Greedy Function Approximation: A Gradient Boosting Machine},
+  author  = {Friedman, Jerome H.},
+  journal = {The Annals of Statistics},
+  volume  = {29},
+  number  = {5},
+  pages   = {1189--1232},
+  year    = {2001},
+  doi     = {10.1214/aos/1013203451}
+}
+
+@inproceedings{chen2016xgboost,
+  title     = {{XGBoost}: A Scalable Tree Boosting System},
+  author    = {Chen, Tianqi and Guestrin, Carlos},
+  booktitle = {Proceedings of the 22nd ACM SIGKDD International Conference on
+               Knowledge Discovery and Data Mining},
+  pages     = {785--794},
+  year      = {2016},
+  doi       = {10.1145/2939672.2939785}
+}
+
+@inproceedings{ke2017lightgbm,
+  title     = {{LightGBM}: A Highly Efficient Gradient Boosting Decision Tree},
+  author    = {Ke, Guolin and Meng, Qi and Finley, Thomas and others},
+  booktitle = {Advances in Neural Information Processing Systems},
+  volume    = {30},
+  year      = {2017}
+}
+
+@article{tibshirani1996regression,
+  title   = {Regression Shrinkage and Selection via the {LASSO}},
+  author  = {Tibshirani, Robert},
+  journal = {Journal of the Royal Statistical Society: Series B (Methodological)},
+  volume  = {58},
+  number  = {1},
+  pages   = {267--288},
+  year    = {1996},
+  doi     = {10.1111/j.2517-6161.1996.tb02080.x}
+}
+
+@article{hoerl1970ridge,
+  title   = {Ridge Regression: Biased Estimation for Nonorthogonal Problems},
+  author  = {Hoerl, Arthur E. and Kennard, Robert W.},
+  journal = {Technometrics},
+  volume  = {12},
+  number  = {1},
+  pages   = {55--67},
+  year    = {1970},
+  doi     = {10.1080/00401706.1970.10488634}
+}
+
+@article{nelder1972glm,
+  title   = {Generalized Linear Models},
+  author  = {Nelder, John A. and Wedderburn, R. W. M.},
+  journal = {Journal of the Royal Statistical Society: Series A},
+  volume  = {135},
+  number  = {3},
+  pages   = {370--384},
+  year    = {1972},
+  doi     = {10.2307/2344614}
+}
+
+@book{mccullagh1989generalized,
+  title     = {Generalized Linear Models},
+  author    = {McCullagh, Peter and Nelder, John A.},
+  year      = {1989},
+  edition   = {2},
+  publisher = {Chapman and Hall/CRC}
+}
+
+@article{breiman2001random,
+  title   = {Random Forests},
+  author  = {Breiman, Leo},
+  journal = {Machine Learning},
+  volume  = {45},
+  number  = {1},
+  pages   = {5--32},
+  year    = {2001},
+  doi     = {10.1023/A:1010933404324}
+}
+
+@article{stone1974cross,
+  title   = {Cross-Validatory Choice and Assessment of Statistical Predictions},
+  author  = {Stone, M.},
+  journal = {Journal of the Royal Statistical Society: Series B (Methodological)},
+  volume  = {36},
+  number  = {2},
+  pages   = {111--147},
+  year    = {1974},
+  doi     = {10.1111/j.2517-6161.1974.tb00994.x}
+}
+
+@article{friedman2010regularization,
+  title   = {Regularization Paths for Generalized Linear Models via Coordinate Descent},
+  author  = {Friedman, Jerome and Hastie, Trevor and Tibshirani, Rob},
+  journal = {Journal of Statistical Software},
+  volume  = {33},
+  number  = {1},
+  pages   = {1--22},
+  year    = {2010},
+  doi     = {10.18637/jss.v033.i01}
+}
+
+%% =============================================================================
+%% Interpretability
+%% =============================================================================
+
+@inproceedings{lundberg2017shap,
+  title     = {A Unified Approach to Interpreting Model Predictions},
+  author    = {Lundberg, Scott M. and Lee, Su-In},
+  booktitle = {Advances in Neural Information Processing Systems (NeurIPS)},
+  volume    = {30},
+  pages     = {4765--4774},
+  year      = {2017},
+  url       = {https://papers.nips.cc/paper/2017/hash/8a20a8621978632d76c43dfd28b67767-Abstract.html}
+}
+
+@article{lundberg2020treeshap,
+  title   = {From Local Explanations to Global Understanding with Explainable {AI} for Trees},
+  author  = {Lundberg, Scott M. and Erion, Gabriel and Chen, Hugh and others},
+  journal = {Nature Machine Intelligence},
+  volume  = {2},
+  number  = {1},
+  pages   = {56--67},
+  year    = {2020},
+  doi     = {10.1038/s42256-019-0138-9}
+}
+
+@incollection{shapley1953value,
+  title     = {A Value for {N}-Person Games},
+  author    = {Shapley, Lloyd S.},
+  booktitle = {Contributions to the Theory of Games, Volume {II} (Annals of Mathematics Studies 28)},
+  editor    = {Kuhn, Harold W. and Tucker, Albert W.},
+  pages     = {307--317},
+  year      = {1953},
+  publisher = {Princeton University Press},
+  address   = {Princeton, NJ},
+  doi       = {10.1515/9781400881970-018}
+}
+
+@article{apley2020ale,
+  title   = {Visualizing the Effects of Predictor Variables in Black Box Supervised Learning Models},
+  author  = {Apley, Daniel W. and Zhu, Jingyu},
+  journal = {Journal of the Royal Statistical Society: Series B},
+  volume  = {82},
+  number  = {4},
+  pages   = {1059--1086},
+  year    = {2020},
+  doi     = {10.1111/rssb.12377}
+}
+
+@article{friedman2008predictive,
+  title   = {Predictive Learning via Rule Ensembles},
+  author  = {Friedman, Jerome H. and Popescu, Bogdan E.},
+  journal = {The Annals of Applied Statistics},
+  volume  = {2},
+  number  = {3},
+  pages   = {916--954},
+  year    = {2008}
+}
+
+@article{goldstein2015ice,
+  title   = {Peeking Inside the Black Box: Visualizing Statistical Learning with Plots of Individual Conditional Expectation},
+  author  = {Goldstein, Alex and Kapelner, Adam and Bleich, Justin and Pitkin, Emil},
+  journal = {Journal of Computational and Graphical Statistics},
+  volume  = {24},
+  number  = {1},
+  pages   = {44--65},
+  year    = {2015},
+  doi     = {10.1080/10618600.2014.907095}
+}
+
+@article{ribeiro2016lime,
+  title     = {"{W}hy Should {I} Trust You?": Explaining the Predictions of Any Classifier},
+  author    = {Ribeiro, Marco Tulio and Singh, Sameer and Guestrin, Carlos},
+  booktitle = {Proceedings of the 22nd ACM SIGKDD International Conference on
+               Knowledge Discovery and Data Mining},
+  pages     = {1135--1144},
+  year      = {2016},
+  doi       = {10.1145/2939672.2939778}
+}
+
+@book{molnar2020interpretable,
+  title     = {Interpretable Machine Learning: A Guide for Making Black Box Models Explainable},
+  author    = {Molnar, Christoph},
+  year      = {2022},
+  edition   = {2},
+  publisher = {Independently published (Leanpub)},
+  url       = {https://christophm.github.io/interpretable-ml-book/}
+}
+
+@article{nori2019interpretml,
+  title         = {{InterpretML}: A Unified Framework for Machine Learning Interpretability},
+  author        = {Nori, Harsha and Jenkins, Samuel and Koch, Paul and Caruana, Rich},
+  year          = {2019},
+  eprint        = {1909.09223},
+  archivePrefix = {arXiv},
+  primaryClass  = {cs.LG}
+}
+
+%% =============================================================================
+%% Data visualisation
+%% =============================================================================
+
+@book{tufte2001visual,
+  title     = {The Visual Display of Quantitative Information},
+  author    = {Tufte, Edward R.},
+  year      = {2001},
+  edition   = {2},
+  publisher = {Graphics Press}
+}
+
+@article{anscombe1973graphs,
+  title   = {Graphs in Statistical Analysis},
+  author  = {Anscombe, Francis J.},
+  journal = {The American Statistician},
+  volume  = {27},
+  number  = {1},
+  pages   = {17--21},
+  year    = {1973}
+}
+
+@article{wilkinson2005grammar,
+  title     = {The Grammar of Graphics},
+  author    = {Wilkinson, Leland},
+  year      = {2005},
+  edition   = {2},
+  publisher = {Springer},
+  doi       = {10.1007/0-387-28695-0}
+}
+
+@article{cleveland1984graphical,
+  title   = {Graphical Perception: Theory, Experimentation, and Application to the Development of Graphical Methods},
+  author  = {Cleveland, William S. and McGill, Robert},
+  journal = {Journal of the American Statistical Association},
+  volume  = {79},
+  number  = {387},
+  pages   = {531--554},
+  year    = {1984},
+  doi     = {10.1080/01621459.1984.10478080}
+}
+
+@inproceedings{matejka2017same,
+  title     = {Same Stats, Different Graphs: Generating Datasets with Varied Appearance and Identical Statistics through Simulated Annealing},
+  author    = {Matejka, Justin and Fitzmaurice, George},
+  booktitle = {Proceedings of the 2017 CHI Conference on Human Factors in Computing Systems},
+  pages     = {1290--1294},
+  year      = {2017},
+  doi       = {10.1145/3025453.3025912}
+}
+
+@inproceedings{satyanarayan2017vegalite,
+  title     = {{Vega-Lite}: A Grammar of Interactive Graphics},
+  author    = {Satyanarayan, Arvind and Moritz, Dominik and Wongsuphasawat, Kanit and Heer, Jeffrey},
+  booktitle = {IEEE Transactions on Visualization and Computer Graphics (Proc. IEEE InfoVis)},
+  volume    = {23},
+  number    = {1},
+  pages     = {341--350},
+  year      = {2017},
+  doi       = {10.1109/TVCG.2016.2599030}
+}
+
+%% =============================================================================
+%% Tabular foundation models
+%% =============================================================================
+
+@inproceedings{hollmann2023tabpfn,
+  title     = {{TabPFN}: A Transformer That Solves Small Tabular Classification Problems in a Second},
+  author    = {Hollmann, Noah and M{\"u}ller, Samuel and Eggensperger, Katharina and Hutter, Frank},
+  booktitle = {International Conference on Learning Representations (ICLR)},
+  year      = {2023}
+}
+
+@article{ye2025tabicl,
+  title         = {{TabICL}: A Tabular Foundation Model for In-Context Learning on Large Data},
+  author        = {Ye, Han and Varoquaux, Ga{\"e}l and others},
+  year          = {2025},
+  eprint        = {2502.05564},
+  archivePrefix = {arXiv},
+  primaryClass  = {cs.LG}
+}
+
+@article{grinsztajn2022tabular,
+  title   = {Why do tree-based models still outperform deep learning on typical tabular data?},
+  author  = {Grinsztajn, L{\'e}o and Oyallon, Edouard and Varoquaux, Ga{\"e}l},
+  journal = {Advances in Neural Information Processing Systems},
+  volume  = {35},
+  year    = {2022}
+}
+
+@article{borisov2022deep,
+  title         = {Deep Neural Networks and Tabular Data: A Survey},
+  author        = {Borisov, Vadim and Leemann, Tobias and Se{\ss}ler, Kathrin and Haug, Johannes and
+                   Pawelczyk, Martin and Kasneci, Gjergji},
+  journal       = {IEEE Transactions on Neural Networks and Learning Systems},
+  year          = {2022},
+  eprint        = {2110.01889},
+  archivePrefix = {arXiv}
+}
+
+@article{purucker2025beyondiid,
+  title         = {Beyond IID: How General Are Tabular Foundation Models, Really?},
+  author        = {Purucker, Lennart and Tschalzev, Andrej and Erickson, Nick and Blayer, Gioia and
+                   Holzm{\"u}ller, David and Arazi, Alan and Pfefferle, Alexander and Tajjar, Mustafa and
+                   Varoquaux, Ga{\"e}l and Hutter, Frank},
+  year          = {2025},
+  eprint        = {2606.30410},
+  archivePrefix = {arXiv},
+  primaryClass  = {cs.LG}
+}
+
+@article{hollmann2025tabpfnv2,
+  title     = {Accurate Predictions on Small Data with a Tabular Foundation Model},
+  author    = {Hollmann, Noah and M{\"u}ller, Samuel and Purucker, Lennart and
+               Krishnakumar, Arjun and K{\"o}rfer, Max and Hoo, Shi Bin and
+               Schirrmeister, Robin Tibor and Hutter, Frank},
+  journal   = {Nature},
+  volume    = {637},
+  number    = {8045},
+  pages     = {319--326},
+  year      = {2025},
+  doi       = {10.1038/s41586-024-08328-6}
+}
+
+%% =============================================================================
+%% MLOps, deployment, and monitoring
+%% =============================================================================
+
+@book{huyen2022designing,
+  title     = {Designing Machine Learning Systems},
+  author    = {Huyen, Chip},
+  year      = {2022},
+  publisher = {O'Reilly Media}
+}
+
+@book{kleppmann2017designing,
+  title     = {Designing Data-Intensive Applications},
+  author    = {Kleppmann, Martin},
+  year      = {2017},
+  publisher = {O'Reilly Media}
+}
+
+@article{sculley2015hidden,
+  title   = {Hidden Technical Debt in Machine Learning Systems},
+  author  = {Sculley, D. and Holt, Gary and Golovin, Daniel and others},
+  journal = {Advances in Neural Information Processing Systems},
+  volume  = {28},
+  year    = {2015}
+}
+
+@article{gama2014drift,
+  title     = {A Survey on Concept Drift Adaptation},
+  author    = {Gama, Jo{\~a}o and {\v{Z}}liobait{\.e}, Indr{\.e} and Bifet, Albert and
+               Pechenizkiy, Mykola and Bouchachia, Abdelhamid},
+  journal   = {ACM Computing Surveys},
+  volume    = {46},
+  number    = {4},
+  pages     = {44},
+  year      = {2014},
+  doi       = {10.1145/2523813}
+}
+
+@article{lu2018learning,
+  title   = {Learning Under Concept Drift: A Review},
+  author  = {Lu, Jie and Liu, Anjin and Dong, Fan and Gu, Feng and Gama, Jo{\~a}o and Zhang, Guangquan},
+  journal = {IEEE Transactions on Knowledge and Data Engineering},
+  volume  = {31},
+  number  = {12},
+  pages   = {2346--2363},
+  year    = {2018}
+}
+
+@article{quinonero2009dataset,
+  title     = {Dataset Shift in Machine Learning},
+  author    = {Qui{\~n}onero-Candela, Joaquin and Sugiyama, Masashi and Schwaighofer, Anton and
+               Lawrence, Neil D.},
+  year      = {2009},
+  publisher = {MIT Press}
+}
+
+%% =============================================================================
+%% Fairness & AI ethics
+%% =============================================================================
+
+@article{chouldechova2017fair,
+  title   = {Fair Prediction with Disparate Impact: A Study of Bias in Recidivism Prediction Instruments},
+  author  = {Chouldechova, Alexandra},
+  journal = {Big Data},
+  volume  = {5},
+  number  = {2},
+  pages   = {153--163},
+  year    = {2017},
+  doi     = {10.1089/big.2016.0047}
+}
+
+@inproceedings{kleinberg2017inherent,
+  title     = {Inherent Trade-Offs in the Fair Determination of Risk Scores},
+  author    = {Kleinberg, Jon and Mullainathan, Sendhil and Raghavan, Manish},
+  booktitle = {Proceedings of the 8th Innovations in Theoretical Computer Science Conference (ITCS)},
+  pages     = {43:1--43:23},
+  year      = {2017},
+  doi       = {10.4230/LIPIcs.ITCS.2017.43}
+}
+
+@misc{euaiact2024,
+  title  = {{Regulation (EU) 2024/1689 (AI Act)}},
+  author = {{European Parliament and Council of the EU}},
+  year   = {2024},
+  url    = {https://eur-lex.europa.eu/eli/reg/2024/1689/oj}
+}
+
+@article{young1985monotonic,
+  title   = {Monotonic Solutions of Cooperative Games},
+  author  = {Young, H. Peyton},
+  journal = {International Journal of Game Theory},
+  volume  = {14},
+  number  = {2},
+  pages   = {65--72},
+  year    = {1985},
+  doi     = {10.1007/BF01769885}
+}
+
+@inproceedings{janzing2020feature,
+  title     = {Feature Relevance Quantification in Explainable {AI}: A Causal Problem},
+  author    = {Janzing, Dominik and Minorics, Lenon and Bl{\"o}baum, Patrick},
+  booktitle = {Proceedings of the 23rd International Conference on Artificial Intelligence and Statistics (AISTATS)},
+  series    = {Proceedings of Machine Learning Research},
+  volume    = {108},
+  pages     = {2907--2916},
+  year      = {2020}
+}
+
+@article{wachter2018counterfactual,
+  title   = {Counterfactual Explanations Without Opening the Black Box: Automated Decisions and the {GDPR}},
+  author  = {Wachter, Sandra and Mittelstadt, Brent and Russell, Chris},
+  journal = {Harvard Journal of Law \& Technology},
+  volume  = {31},
+  number  = {2},
+  pages   = {841--887},
+  year    = {2018}
+}
+
+@article{goodman2016reproducibility,
+  title   = {What Does Research Reproducibility Mean?},
+  author  = {Goodman, Steven N. and Fanelli, Daniele and Ioannidis, John P. A.},
+  journal = {Science Translational Medicine},
+  volume  = {8},
+  number  = {341},
+  pages   = {341ps12},
+  year    = {2016},
+  doi     = {10.1126/scitranslmed.aaf5027}
+}
+
+@book{beyer2016site,
+  title     = {Site Reliability Engineering: How {Google} Runs Production Systems},
+  author    = {Beyer, Betsy and Jones, Chris and Petoff, Jennifer and Murphy, Niall Richard},
+  year      = {2016},
+  publisher = {O'Reilly Media}
+}
+
+@inproceedings{zheng2023judging,
+  title     = {Judging {LLM}-as-a-Judge with {MT}-Bench and {C}hatbot {A}rena},
+  author    = {Zheng, Lianmin and Chiang, Wei-Lin and Sheng, Ying and Zhuang, Siyuan and Wu, Zhanghao and Zhuang, Yonghao and Lin, Zi and Li, Zhuohan and Li, Dacheng and Xing, Eric P. and Zhang, Hao and Gonzalez, Joseph E. and Stoica, Ion},
+  booktitle = {Advances in Neural Information Processing Systems (NeurIPS)},
+  volume    = {36},
+  year      = {2023}
+}
+
+@inproceedings{dwork2012fairness,
+  title     = {Fairness Through Awareness},
+  author    = {Dwork, Cynthia and Hardt, Moritz and Pitassi, Toniann and Reingold, Omer and Zemel, Richard},
+  booktitle = {Proceedings of the 3rd Innovations in Theoretical Computer Science Conference (ITCS)},
+  pages     = {214--226},
+  year      = {2012},
+  doi       = {10.1145/2090236.2090255}
+}
+
+@inproceedings{hardt2016equality,
+  title     = {Equality of Opportunity in Supervised Learning},
+  author    = {Hardt, Moritz and Price, Eric and Srebro, Nathan},
+  booktitle = {Advances in Neural Information Processing Systems (NeurIPS)},
+  volume    = {29},
+  pages     = {3315--3323},
+  year      = {2016},
+  url       = {https://papers.nips.cc/paper/2016/hash/9d2682367c3935defcb1f9e247a97c0d-Abstract.html}
+}
+
+%% =============================================================================
+%% Model documentation & data governance
+%% =============================================================================
+
+@inproceedings{mitchell2019model,
+  title     = {Model Cards for Model Reporting},
+  author    = {Mitchell, Margaret and Wu, Simone and Zaldivar, Andrew and Barnes, Parker and
+               Vasserman, Lucy and Hutchinson, Ben and Spitzer, Elena and Raji, Inioluwa Deborah and
+               Gebru, Timnit},
+  booktitle = {Proceedings of the Conference on Fairness, Accountability, and Transparency (FAT*)},
+  pages     = {220--229},
+  year      = {2019},
+  doi       = {10.1145/3287560.3287596}
+}
+
+@article{gebru2021datasheets,
+  title   = {Datasheets for Datasets},
+  author  = {Gebru, Timnit and Morgenstern, Jamie and Vecchione, Briana and
+             Vaughan, Jennifer Wortman and Wallach, Hanna and Daum{\'e} III, Hal and Crawford, Kate},
+  journal = {Communications of the ACM},
+  volume  = {64},
+  number  = {12},
+  pages   = {86--92},
+  year    = {2021},
+  doi     = {10.1145/3458723}
+}
+
+%% =============================================================================
+%% Software engineering, Python & tooling
+%% =============================================================================
+
+@article{harris2020numpy,
+  title   = {Array Programming with {NumPy}},
+  author  = {Harris, Charles R. and Millman, K. Jarrod and van der Walt, St{\'e}fan J. and others},
+  journal = {Nature},
+  volume  = {585},
+  number  = {7825},
+  pages   = {357--362},
+  year    = {2020},
+  doi     = {10.1038/s41586-020-2649-2}
+}
+
+@inproceedings{mckinney2010pandas,
+  title     = {Data Structures for Statistical Computing in {Python}},
+  author    = {McKinney, Wes},
+  booktitle = {Proceedings of the 9th Python in Science Conference (SciPy)},
+  pages     = {56--61},
+  year      = {2010},
+  doi       = {10.25080/Majora-92bf1922-00a}
+}
+
+@article{pedregosa2011scikit,
+  title   = {Scikit-learn: Machine Learning in {Python}},
+  author  = {Pedregosa, Fabian and Varoquaux, Ga{\"e}l and Gramfort, Alexandre and others},
+  journal = {Journal of Machine Learning Research},
+  volume  = {12},
+  pages   = {2825--2830},
+  year    = {2011}
+}
+
+@article{hunter2007matplotlib,
+  title   = {Matplotlib: A {2D} Graphics Environment},
+  author  = {Hunter, John D.},
+  journal = {Computing in Science \& Engineering},
+  volume  = {9},
+  number  = {3},
+  pages   = {90--95},
+  year    = {2007}
+}
+
+@article{waskom2021seaborn,
+  title   = {seaborn: statistical data visualization},
+  author  = {Waskom, Michael L.},
+  journal = {Journal of Open Source Software},
+  volume  = {6},
+  number  = {60},
+  pages   = {3021},
+  year    = {2021},
+  doi     = {10.21105/joss.03021}
+}
+
+@misc{wilson2017good,
+  title  = {Good Enough Practices in Scientific Computing},
+  author = {Wilson, Greg and Bryan, Jenny and Cranston, Karen and Kitzes, Justin and
+            Nederbragt, Lex and Teal, Tracy K.},
+  year   = {2017},
+  eprint = {1609.00037},
+  archivePrefix = {arXiv},
+  doi    = {10.1371/journal.pcbi.1005510}
+}
+
+@book{kernighan1999practice,
+  title     = {The Practice of Programming},
+  author    = {Kernighan, Brian W. and Pike, Rob},
+  year      = {1999},
+  publisher = {Addison-Wesley}
+}
+
+@book{beck2003tdd,
+  title     = {Test-Driven Development: By Example},
+  author    = {Beck, Kent},
+  year      = {2003},
+  publisher = {Addison-Wesley},
+  address   = {Boston, MA},
+  isbn      = {978-0-321-14653-3}
+}
+
+@book{raschka2015python,
+  title     = {Python Machine Learning},
+  author    = {Raschka, Sebastian},
+  year      = {2015},
+  publisher = {Packt Publishing},
+  address   = {Birmingham, UK},
+  isbn      = {978-1-78355-513-0}
+}
+
+@book{vanderplas2016python,
+  title     = {Python Data Science Handbook: Essential Tools for Working with Data},
+  author    = {VanderPlas, Jake},
+  year      = {2016},
+  publisher = {O'Reilly Media},
+  address   = {Sebastopol, CA},
+  isbn      = {978-1-4919-1205-8},
+  url       = {https://jakevdp.github.io/PythonDataScienceHandbook/}
+}
+
+@misc{pandas_dev_team,
+  title        = {pandas-dev/pandas: Pandas},
+  author       = {{The pandas development team}},
+  year         = {2024},
+  publisher    = {Zenodo},
+  doi          = {10.5281/zenodo.3509134},
+  url          = {https://doi.org/10.5281/zenodo.3509134}
+}
+
+@misc{polars2020,
+  title        = {{Polars}: Lightning-fast {DataFrame} library for {Rust} and {Python}},
+  author       = {Vink, Ritchie and {Polars contributors}},
+  year         = {2020},
+  howpublished = {\url{https://github.com/pola-rs/polars}},
+  note         = {Software}
+}
+
+%% =============================================================================
+%% Econometrics & causal machine learning
+%% =============================================================================
+
+@article{varian2014bigdata,
+  title   = {Big Data: New Tricks for Econometrics},
+  author  = {Varian, Hal R.},
+  journal = {Journal of Economic Perspectives},
+  volume  = {28},
+  number  = {2},
+  pages   = {3--28},
+  year    = {2014},
+  doi     = {10.1257/jep.28.2.3}
+}
+
+@article{mullainathan2017machine,
+  title   = {Machine Learning: An Applied Econometric Approach},
+  author  = {Mullainathan, Sendhil and Spiess, Jann},
+  journal = {Journal of Economic Perspectives},
+  volume  = {31},
+  number  = {2},
+  pages   = {87--106},
+  year    = {2017},
+  doi     = {10.1257/jep.31.2.87}
+}
+
+@article{athey2019machine,
+  title   = {Machine Learning Methods That Economists Should Know About},
+  author  = {Athey, Susan and Imbens, Guido W.},
+  journal = {Annual Review of Economics},
+  volume  = {11},
+  pages   = {685--725},
+  year    = {2019},
+  doi     = {10.1146/annurev-economics-080217-053433}
+}
+
+@article{chernozhukov2018double,
+  title   = {Double/Debiased Machine Learning for Treatment and Structural Parameters},
+  author  = {Chernozhukov, Victor and Chetverikov, Denis and Demirer, Mert and
+             Duflo, Esther and Hansen, Christian and Newey, Whitney and Robins, James},
+  journal = {The Econometrics Journal},
+  volume  = {21},
+  number  = {1},
+  pages   = {C1--C68},
+  year    = {2018},
+  doi     = {10.1111/ectj.12097}
+}
+
+%% =============================================================================
+%% Additional foundational references (feature engineering, CV, splines, PCA)
+%% =============================================================================
+
+@article{domingos2012useful,
+  title   = {A Few Useful Things to Know about Machine Learning},
+  author  = {Domingos, Pedro},
+  journal = {Communications of the ACM},
+  volume  = {55},
+  number  = {10},
+  pages   = {78--87},
+  year    = {2012},
+  doi     = {10.1145/2347736.2347755},
+  url     = {https://doi.org/10.1145/2347736.2347755}
+}
+
+@inproceedings{kaufman2012leakage,
+  title     = {Leakage in Data Mining: Formulation, Detection, and Avoidance},
+  author    = {Kaufman, Shachar and Rosset, Saharon and Perlich, Claudia and Stitelman, Ori},
+  booktitle = {Proceedings of the 18th ACM SIGKDD International Conference on
+               Knowledge Discovery and Data Mining},
+  pages     = {556--563},
+  year      = {2012},
+  doi       = {10.1145/2020408.2020496}
+}
+
+@book{deboor1978practical,
+  title     = {A Practical Guide to Splines},
+  author    = {de Boor, Carl},
+  year      = {1978},
+  publisher = {Springer},
+  address   = {New York},
+  isbn      = {978-0-387-95366-3}
+}
+
+@book{jolliffe2002principal,
+  title     = {Principal Component Analysis},
+  author    = {Jolliffe, Ian T.},
+  year      = {2002},
+  edition   = {2},
+  publisher = {Springer},
+  address   = {New York},
+  isbn      = {978-0-387-95442-4}
+}
+
+@inproceedings{kohavi1995study,
+  title     = {A Study of Cross-Validation and Bootstrap for Accuracy Estimation and Model Selection},
+  author    = {Kohavi, Ron},
+  booktitle = {Proceedings of the 14th International Joint Conference on Artificial Intelligence (IJCAI)},
+  volume    = {2},
+  pages     = {1137--1143},
+  year      = {1995}
+}
+
+@article{wilkinson2016fair,
+  title   = {The {FAIR} Guiding Principles for Scientific Data Management and Stewardship},
+  author  = {Wilkinson, Mark D. and Dumontier, Michel and Aalbersberg, IJsbrand Jan and
+             Appleton, Gabrielle and Axton, Myles and Baak, Arie and Blomberg, Niklas and
+             Boiten, Jan-Willem and da Silva Santos, Luiz Bonino and Bourne, Philip E. and others},
+  journal = {Scientific Data},
+  volume  = {3},
+  pages   = {160018},
+  year    = {2016},
+  doi     = {10.1038/sdata.2016.18},
+  url     = {https://doi.org/10.1038/sdata.2016.18}
 }

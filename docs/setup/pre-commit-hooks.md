@@ -1,6 +1,14 @@
 # Pre-commit Hooks for Data Science Projects
 
+**Previous:** [Git](git.md) | **Next:** [Lecture 1](../lectures/lecture_1.md)
+
+---
+
 This guide explains how to set up **pre-commit hooks** for data science projects and why they are an important part of a professional workflow.
+
+:::{important}
+**The course repository already ships a `.pre-commit-config.yaml`.** You do **not** need to write one from scratch — clone the course repo, run `pre-commit install`, and you are done. The configuration below is documented here so you understand *what* is running and *why*, and so you can reuse the pattern in your own projects.
+:::
 
 We focus on a **popular, battle-tested default configuration** that works well for:
 
@@ -136,9 +144,15 @@ repos:
 ```
 
 :::{note}
-The version numbers above (e.g. `rev: 24.8.0`) will become outdated over time.
-Run `pre-commit autoupdate` periodically to pull in the latest stable versions.
-The course repository's `.pre-commit-config.yaml` is the canonical reference — use it as your starting point.
+The version numbers above (e.g. `rev: 24.8.0`) are illustrative and **will drift** as upstream projects release. Do not copy them blindly — instead, run:
+
+```bash
+pre-commit autoupdate
+```
+
+This walks your `.pre-commit-config.yaml` and rewrites every `rev:` field to the latest stable release. Re-run it every few months, commit the change, and CI will pick it up automatically.
+
+The course repository's `.pre-commit-config.yaml` is the canonical reference — reuse it rather than authoring a new one from scratch.
 :::
 
 ---
@@ -291,6 +305,45 @@ pre-commit autoupdate
 ```
 
 This updates all `rev:` values in your `.pre-commit-config.yaml` to the latest stable releases.
+
+---
+
+## CI Integration
+
+Running pre-commit locally is only half the story. In professional projects the **exact same hooks run in Continuous Integration** — every Pull Request is automatically checked, and the merge is blocked until the hooks pass.
+
+This matters because:
+
+- A student (or teammate) can *bypass* local hooks with `git commit --no-verify`. CI cannot be bypassed.
+- Fresh clones, forks, and reviewers all get the same guarantee: **everything on `main` passed the checks.**
+- It removes the "did you run the formatter?" step from every code review.
+
+Below is a minimal GitHub Actions workflow that runs pre-commit on every push and pull request. Save it as `.github/workflows/pre-commit.yml`:
+
+```yaml
+name: pre-commit
+
+on:
+  push:
+    branches: [main]
+  pull_request:
+
+jobs:
+  pre-commit:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-python@v5
+        with:
+          python-version: "3.11"
+      - uses: pre-commit/action@v3.0.1
+```
+
+This is the same command (`pre-commit run --all-files`) that you run locally, executed on GitHub's runners. If your local commit passes, the CI check will pass.
+
+:::{seealso}
+The course repository already wires this up — see [`.github/workflows/`](../../.github/workflows/) for the concrete workflow files used in class. Read them; they are short and illustrate the pattern above with a real environment.
+:::
 
 ---
 
