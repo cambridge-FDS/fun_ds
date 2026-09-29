@@ -677,35 +677,50 @@ value of every dataset your project curates.
 
 ---
 
-## Try It Yourself
+## Exercises
 
-:::{admonition} Exercise 1.1 — Convert a notebook to a package
-:class: tip
-Take any notebook you have written previously (or a sample from
-[Kaggle](https://www.kaggle.com/)). Refactor it as follows:
+_Optional._ Each exercise trains one skill you will need whenever you take a real dataset from raw data to a model you can defend. They take 30–60 minutes each and end with **Done when** criteria you can check yourself; hints are collapsed so you can try first. The tutorials remain the core practice.
 
-1. Move every function into a file `src/mypkg/utils.py`.
-2. Add a `pyproject.toml` at the project root (use the `fun_ds` one as a template).
-3. `pip install -e .`
-4. Confirm you can `from mypkg.utils import <your function>` from a fresh notebook.
-   Compare notebook length before and after: what has been simplified?
-   :::
+:::{admonition} Exercise 1.1 — Package a notebook
+:class: exercise
+**Skill.** Turning notebook code into an importable, documented, tested package — the structure every later lecture assumes.
 
-:::{admonition} Exercise 1.2 — Practice Git workflow
-:class: tip
+Take any notebook you have written before (or a public one from [Kaggle](https://www.kaggle.com/)).
 
-1. Fork the [`fun_ds` repository](https://github.com/cambridge-FDS/fun_ds).
-2. Create a branch `feature/typos-<yourname>`.
-3. Fix a typo you find (there will be some — send a PR!) and commit.
-4. Push and open a pull request against `main`.
-   This is the exact workflow used by every project in the course.
-   :::
+1. Move every function into `src/mypkg/utils.py` and give each a type-hinted signature and a docstring.
+2. Add a `pyproject.toml` at the repository root (use the `fun_ds` one as a template) and run `pip install -e .`.
+3. Replace the definitions in the notebook with `from mypkg.utils import ...`.
+4. Write one test in `tests/test_utils.py` that calls one of your functions on a tiny hand-made input and checks the result.
 
-:::{admonition} Exercise 1.3 — Diagnose the pipeline
-:class: tip
-For each stage of the data-science workflow (§4), name **one thing** that
-could go wrong and describe how you would notice. Focus on failures that
-would not be caught by a passing test on training data.
+**Done when.**
+
+- `from mypkg.utils import <your function>` works in a fresh kernel, started from any directory, without touching `sys.path`.
+- `pytest` passes from the repository root.
+- The notebook contains no function definitions, only narrative, calls and outputs.
+  :::
+
+:::{dropdown} Hint
+If the import only works from one directory, you are relying on the working directory rather than the installed package. Run `python -c "import mypkg; print(mypkg.__file__)"` from elsewhere: it should point into your `src/` folder. Testing is covered properly in [Lecture 6](lecture_6.ipynb); for now a plain `assert` inside a function whose name starts with `test_` is enough.
+:::
+
+:::{admonition} Exercise 1.2 — The clean-clone test
+:class: exercise
+**Skill.** Making code run _out of the box_ for someone who is not you. "It works on my machine" usually means some state exists only on your machine.
+
+Use the repository from Exercise 1.1, or any small repository of your own.
+
+1. Push it to GitHub, then clone it into a new temporary directory.
+2. Using **only** the tracked files and the instructions in `README.md`, create the environment, install the package and run the code end to end.
+3. Each time you have to do something the README does not tell you (install a package, copy a data file, edit a path, run cells out of order), write it down.
+4. Fix the repository so that each item disappears, commit, delete the clone and repeat.
+
+**Done when.**
+
+- A fresh clone runs end to end by following the README alone, and your list is empty.
+  :::
+
+:::{dropdown} Hint
+The usual culprits are absolute paths (`/Users/you/...`), data files that exist locally but are git-ignored or were never committed, packages installed ad hoc but missing from the environment file, and notebooks that only work when run out of order. [Writing Robust Code](#writing-robust-code) covers portable paths.
 :::
 
 ---
