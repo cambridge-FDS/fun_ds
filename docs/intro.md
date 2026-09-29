@@ -109,14 +109,6 @@ groundwork** that students need before those courses: how to build,
 evaluate, and deploy a model, and how cross-validation and regularisation
 work in practice. D200 and D300 supply the theoretical deepening.
 
-## Citing this Book
-
-If you refer to this book in your work, please cite it as:
-
-> Ochs, A. and Roerig, C. (2024–2025). _Fundamentals of Data Science_.
-> University of Cambridge, MPhil in Economics and Data Science.
-> [https://github.com/cambridge-FDS/fun_ds](https://github.com/cambridge-FDS/fun_ds)
-
 ## License
 
 This material is licensed under

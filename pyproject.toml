@@ -12,6 +12,7 @@ requires-python = ">=3.11"
 authors = [
     { name = "Adrian Ochs" },
     { name = "Christian Roerig" },
+    { name = "Niklas Schmitz" },
 ]
 dependencies = [
     "numpy>=1.24",

@@ -5,6 +5,7 @@ project:
   authors:
     - name: Adrian Ochs
     - name: Christian Roerig
+    - name: Niklas Schmitz
   copyright: "2024-2025"
   license: CC-BY-4.0
   keywords:
