@@ -1,205 +1,78 @@
-# Environment Management: micromamba and pixi
+# Environments: pixi (and conda)
+
+**Previous:** [Day 1 Setup](quickstart.md) | **Next:** [VS Code](vscode.md)
+
+---
+
+:::{tip}
+Just want to get set up? Follow the step-by-step [Day 1 Setup](quickstart.md).
+This page explains _why_ we use environments, how pixi works, and how it
+relates to the conda workflow shown in the Lecture 1 slides.
+:::
 
 ## Why use environments at all?
 
-Before we get to the tools, the _why_: a Python environment is an isolated set of packages and a specific Python version, scoped to a single project. Without one, you install everything into your system Python and quickly hit trouble.
+A Python environment is an isolated set of packages plus a specific Python
+version, scoped to a single project. Without one, you install everything into
+your system Python and quickly hit trouble.
 
-Three forces conspire against a "just pip install it" workflow:
+Three forces work against a "just pip install it" workflow:
 
 - **Dependencies rot.** Libraries release breaking changes constantly. A notebook that ran fine six months ago may not import today if `pandas`, `scikit-learn`, or `numpy` have moved on. Pinning versions freezes a working combination in place.
-- **Operating systems differ.** macOS (Intel vs. Apple Silicon), Linux, and Windows resolve binaries differently. A wheel that works on your laptop may not exist for a classmate's machine unless the environment manager knows how to solve per-platform.
-- **Hardware differs.** CUDA vs. CPU builds, ARM vs. x86, AVX support — the same "package" is actually a family of builds. An environment manager picks the right one.
+- **Operating systems differ.** macOS (Intel vs. Apple Silicon), Linux, and Windows need different binaries. A package build that works on your laptop may not exist for a classmate's machine unless the environment manager knows how to solve per platform.
+- **Hardware differs.** CUDA vs. CPU builds, ARM vs. x86: the same "package" is really a family of builds, and an environment manager picks the right one.
 
-The goal is a **reproducible build**: given the same specification, anyone, anywhere, at any time gets the same working environment. This is the same principle Martin Kleppmann calls out in _Designing Data-Intensive Applications_ — reproducibility is a system property you engineer for, not a happy accident.
+The goal is a **reproducible build**: given the same specification, anyone,
+anywhere, at any time gets the same working environment. That is exactly what
+you want when a classmate, a marker or your future self needs to rerun your
+analysis.
 
 :::{seealso}
 For a broader take on why reproducibility, project layout, and automation matter in scientific work, see {cite}`wilson2017good` — "Good Enough Practices in Scientific Computing".
 :::
 
-This course uses Python packages (NumPy, pandas, scikit-learn, Jupyter, ...). To keep your setup **reliable** and **reproducible**, we recommend using a modern environment manager instead of installing everything globally.
+---
 
-This guide explains two good options:
+## From conda to pixi
 
-- **micromamba**: a fast, minimal Conda-compatible package manager
-- **pixi**: a modern, lockfile-first environment manager (recommended)
+The Lecture 1 slides introduce **conda**, the long-standing package and
+environment manager of the scientific Python world, and then **pixi** as the
+modern alternative. The course repository uses **pixi**. The ideas are the
+same; pixi adds two things conda lacks by default:
+
+1. **A lockfile.** `pixi.lock` records the _exact_ version and build of every
+   package for every platform. Two students who install a month apart get
+   byte-identical environments. A conda `environment.yml` usually lists only
+   top-level packages, often without versions, so it drifts over time.
+2. **Project-local environments and tasks.** The environment lives inside the
+   project folder (`.pixi/`), and `pixi.toml` can define named commands
+   (`pixi run test`) that behave the same on every machine.
+
+Both install from the same **conda-forge** package channel, so every package
+available to conda is available to pixi.
+
+| You want to…                | conda                                     | pixi (inside the project folder)                |
+| --------------------------- | ----------------------------------------- | ----------------------------------------------- |
+| Create the environment      | `conda env create -f environment.yml`     | `pixi install`                                  |
+| Add a package               | `conda install seaborn` (+ edit the YAML) | `pixi add seaborn` (updates `pixi.toml` + lock) |
+| Run one command in it       | `conda activate env` then `python …`      | `pixi run python …`                             |
+| Get an interactive shell    | `conda activate env`                      | `pixi shell` (leave with `exit`)                |
+| Share the spec              | `environment.yml`                         | `pixi.toml` + `pixi.lock` (commit both)         |
+| Where the environment lives | `~/miniconda3/envs/<name>/` (global)      | `<project>/.pixi/envs/default/` (per project)   |
 
 :::{note}
-If you are new to environments: an environment is an isolated set of packages and a specific Python version.
-This prevents "it works on my machine" problems and avoids conflicts between projects.
-:::
-
-## Day 1 Checklist
-
-This is the **single source of truth** for getting set up before Lecture 1. Work through it top-to-bottom on your own laptop — you should finish in roughly **60–90 minutes** including downloads.
-
-```{mermaid}
-flowchart LR
-    A[Install pixi<br/>10 min] --> B[Clone course repo<br/>5 min]
-    B --> C[pixi install<br/>10 min]
-    C --> D[Install VS Code<br/>+ extensions<br/>15 min]
-    D --> E[Configure Git<br/>identity + auth<br/>15 min]
-    E --> F[Install<br/>pre-commit hooks<br/>5 min]
-    F --> G[Verify:<br/>pixi run pytest -q<br/>5 min]
-```
-
-| #   | Step                                          | Time                         | Where                                              |
-| --- | --------------------------------------------- | ---------------------------- | -------------------------------------------------- |
-| 1   | **Install pixi**                              | ~10 min                      | This guide, [Option B](#option-b-pixi-recommended) |
-| 2   | **Clone the course repo**                     | ~5 min                       | [Git guide](git.md)                                |
-| 3   | **Run `pixi install`** in the repo            | ~10 min (depends on network) | This guide                                         |
-| 4   | **Install VS Code + core extensions**         | ~15 min                      | [VS Code guide](vscode.md)                         |
-| 5   | **Configure Git identity**                    | ~5 min                       | [Git guide](git.md)                                |
-| 6   | **Set up GitHub authentication (SSH or PAT)** | ~10 min                      | [Git guide](git.md)                                |
-| 7   | **Install pre-commit hooks**                  | ~5 min                       | [pre-commit guide](pre-commit-hooks.md)            |
-| 8   | **Verify your setup**                         | ~5 min                       | See below                                          |
-
-### Step 8: Verify your setup
-
-From the root of the course repository, run:
-
-```bash
-pixi run pytest -q
-```
-
-If the test suite passes (or reports "no tests ran" cleanly, depending on the state of the repo), your environment is wired up correctly. As a secondary sanity check:
-
-```bash
-pixi list | head
-pixi run python -c "import numpy; print(numpy.__version__)"
-```
-
-The first command shows the top of the resolved package list; the second confirms Python can import a core dependency and prints its version. If both work, you are done.
-
-:::{tip}
-If any step fails, jump to the [Troubleshooting](#day-1-troubleshooting-top-5-issues) section at the bottom of this page **before** asking on the forum — the fix is almost always there.
+You already know conda and want to keep using it for your _own_ projects? That's
+fine. The [micromamba section](#appendix-micromamba) below shows a fast,
+conda-compatible tool. For the **course repository**, use pixi: its tasks
+(`pixi run install`, `pixi run test`, …) and the lockfile are what keep
+everyone's setup identical.
 :::
 
 ---
 
-## Option A: micromamba
+## pixi in the course repository
 
-### What is micromamba?
-
-**micromamba** is a lightweight alternative to conda/mamba:
-
-- Very fast dependency resolution
-- Small installer footprint
-- Uses the **conda-forge** ecosystem (huge package availability)
-- Works well when you want a simple "conda-style" workflow
-
-### When to use micromamba
-
-Choose micromamba if:
-
-- you already know conda environments
-- you want a minimal tool that behaves like conda
-- you don't need project-level lockfiles and tasks
-
-### Installation
-
-**macOS / Linux:**
-
-```bash
-"${SHELL}" <(curl -L micro.mamba.pm/install.sh)
-```
-
-**Windows (PowerShell):**
-
-```powershell
-Invoke-Expression ((Invoke-WebRequest -Uri https://micro.mamba.pm/install.ps1 -UseBasicParsing).Content)
-```
-
-:::{tip}
-You can usually install micromamba in a user directory and avoid needing admin rights.
-:::
-
-After installation, ensure it's available in your shell:
-
-```bash
-micromamba --version
-```
-
-### Shell initialization
-
-micromamba needs shell integration so that activation works properly:
-
-```bash
-micromamba shell init -s bash -p ~/micromamba
-# Restart your shell after this
-```
-
-For zsh:
-
-```bash
-micromamba shell init -s zsh -p ~/micromamba
-# Restart your shell after this
-```
-
-### Creating an environment
-
-Create an environment with a fixed Python version and core packages:
-
-```bash
-micromamba create -n ds101 -c conda-forge python=3.11 numpy pandas scikit-learn matplotlib jupyterlab
-```
-
-Activate it:
-
-```bash
-micromamba activate ds101
-```
-
-Check Python:
-
-```bash
-python --version
-```
-
-### Installing additional packages
-
-```bash
-micromamba install -n ds101 -c conda-forge seaborn scipy
-```
-
-### Exporting the environment
-
-You can export an environment file for sharing:
-
-```bash
-micromamba env export -n ds101 > environment.yml
-```
-
-:::{warning}
-An `environment.yml` is often **not fully reproducible** over time because it can allow version drift.
-Two students creating an environment months apart may end up with different dependency versions.
-:::
-
----
-
-## Option B: pixi (recommended)
-
-### What is pixi?
-
-**pixi** is a modern environment and project manager designed around:
-
-- **Project-based workflows** (your environment "lives with" your project)
-- **Lockfiles** for reproducibility
-- Simple cross-platform setup (same project works on Windows/macOS/Linux)
-- Optional **tasks** (run scripts like `pixi run test` / `pixi run lab`)
-
-pixi uses the conda-forge ecosystem as well, so you still get the same broad package availability.
-
-### Why we recommend pixi for this course
-
-pixi is the best default for a class because it makes setups predictable:
-
-- Students get **the same dependency versions** via the lockfile.
-- Instructors can provide a single project folder that "just works".
-- Running commands is consistent across platforms.
-
-In short: fewer installation issues and fewer "dependency mismatch" problems.
-
-### Installation
+### Install pixi
 
 **macOS / Linux:**
 
@@ -211,249 +84,42 @@ curl -fsSL https://pixi.sh/install.sh | sh
 
 ```powershell
 winget install prefix-dev.pixi
-```
-
-Or via PowerShell directly:
-
-```powershell
+# or, without winget:
 iwr -useb https://pixi.sh/install.ps1 | iex
 ```
 
-After installation, open a **new terminal** and verify:
+Open a **new terminal** and check with `pixi --version`. Keep pixi up to date
+with `pixi self-update`.
+
+### The two files that define the environment
+
+Open `pixi.toml` in the course repository. Its main parts are:
+
+- `[workspace]`: name, the package channel (`conda-forge`) and the
+  **platforms** the lockfile is solved for (macOS Intel and Apple Silicon,
+  Linux, Windows).
+- `[dependencies]`: the core packages every lecture needs (`pandas`,
+  `scikit-learn`, `matplotlib`, …), usually with a minimum version.
+- `[feature.<name>.dependencies]`: optional groups of packages. `docs` holds
+  the heavier libraries used in later lectures (`polars`, `shap`, `mlflow`, …);
+  `test` holds `pytest`; `lint` holds `pre-commit` and `ruff`.
+- `[environments]`: which features make up which environment. The `default`
+  environment includes **all** features, so it is the only one you need.
+- `[tasks]`: named commands (see below).
+
+`pixi.lock` is generated. Never edit it by hand, but do commit it.
+
+### Everyday commands
 
 ```bash
-pixi --version
+pixi install                 # create/update the environment from pixi.lock
+pixi run <command>           # run any command inside the environment
+pixi shell                   # interactive shell with the environment active (exit to leave)
+pixi list                    # what is installed, with exact versions
+pixi task list               # which named tasks this project defines
 ```
 
-### Core concepts
-
-pixi is project-first. The project contains:
-
-- `pixi.toml`: high-level dependency specification
-- `pixi.lock`: exact resolved versions (reproducibility)
-
-A typical workflow is:
-
-1. clone/download a course repository (containing `pixi.toml`)
-2. run `pixi install`
-3. run tools via `pixi run ...` or enter the environment with `pixi shell`
-
-### Entering the environment shell
-
-For an interactive session where you want to type commands directly (rather than prefixing each with `pixi run`), use:
-
-```bash
-pixi shell
-```
-
-This drops you into a shell with the environment activated. Type `exit` to leave.
-
-:::{tip}
-Use `pixi run <command>` for one-off commands and `pixi shell` when you want an interactive session.
-:::
-
-### Create a new project (example)
-
-If you are starting from scratch:
-
-```bash
-mkdir ds101
-cd ds101
-pixi init
-```
-
-Add dependencies:
-
-```bash
-pixi add python=3.11 numpy pandas scikit-learn matplotlib jupyterlab
-```
-
-Install (resolve + create environment):
-
-```bash
-pixi install
-```
-
-Run Python inside the environment:
-
-```bash
-pixi run python --version
-```
-
-### Verifying your installation
-
-Once `pixi install` finishes, sanity-check what actually got installed:
-
-```bash
-pixi list | head
-```
-
-This prints the resolved packages (name, version, build). If you see your dependencies with concrete version numbers, the environment is real.
-
-Verify Python can import a core package:
-
-```bash
-pixi run python -c "import numpy; print(numpy.__version__)"
-```
-
-If this prints a version string, you are done. If it errors, your interpreter is probably pointing outside the pixi environment — always run through `pixi run ...` or from inside `pixi shell`.
-
-### `.gitignore` for pixi projects
-
-pixi creates a `.pixi/` directory for the local environment. This should **not** be committed to Git.
-When you run `pixi init`, a `.gitignore` is created automatically — check that it includes:
-
-```text
-.pixi
-```
-
-If not, add it manually.
-
-### Starting JupyterLab via pixi
-
-You can run JupyterLab without manual activation:
-
-```bash
-pixi run jupyter lab
-```
-
-:::{tip}
-This is great for a course: you don't need to teach shell activation first.
-Students can just run one command.
-:::
-
-### Optional: use tasks for common commands
-
-pixi can define tasks in `pixi.toml` so everyone uses the same commands.
-
-Example `pixi.toml` snippet:
-
-```toml
-[project]
-name = "ds101"
-channels = ["conda-forge"]
-platforms = ["linux-64", "osx-64", "osx-arm64", "win-64"]
-
-[dependencies]
-python = "3.11"
-numpy = "*"
-pandas = "*"
-scikit-learn = "*"
-matplotlib = "*"
-jupyterlab = "*"
-
-[tasks]
-lab = "jupyter lab"
-test = "python -m pytest -q"
-```
-
-:::{note}
-The `"*"` version specifier means "any version". In your own scratch projects this is fine.
-In the course repository, the `pixi.lock` file pins every dependency to exact versions — so everyone
-runs the same code regardless of when they install.
-:::
-
-Then students can run:
-
-```bash
-pixi run lab
-```
-
-### Updating dependencies
-
-To update (e.g., during development):
-
-```bash
-pixi update
-```
-
-:::{note}
-If you are teaching a course, you typically update dependencies only when you intend to.
-The lockfile ensures students stay consistent.
-:::
-
-### Using an instructor-provided repository
-
-If your instructor provides a folder with `pixi.toml`:
-
-```bash
-# inside the course project folder
-pixi install
-pixi run jupyter lab
-```
-
----
-
-## micromamba vs pixi (quick comparison)
-
-| Feature           | micromamba                               | pixi                                  |
-| ----------------- | ---------------------------------------- | ------------------------------------- |
-| Primary style     | environment-first (conda-like)           | project-first                         |
-| Reproducibility   | good with discipline, but YAML can drift | excellent via lockfile                |
-| Best for courses  | workable                                 | best (fewer "it doesn't work" issues) |
-| Commands          | create/activate/install                  | add/install/run                       |
-| Typical artifacts | `environment.yml`                        | `pixi.toml` + `pixi.lock`             |
-
----
-
-## Final recommendation for this course
-
-We recommend **pixi**.
-
-- It gives each project a **portable, reproducible environment**
-- It reduces student setup issues
-- It enables consistent commands (e.g., `pixi run jupyter lab`)
-- The lockfile makes debugging and grading easier because everyone runs the same versions
-
-If you already use conda/mamba and prefer that style, **micromamba is a solid alternative**—but for a course setting, pixi's project + lockfile workflow is the most reliable.
-
----
-
-## Day 1 Troubleshooting: Top 5 Issues
-
-These are the problems most students hit. Try these fixes **before** posting on the forum — nine times out of ten one of them resolves the issue.
-
-### `pixi: command not found` after installation
-
-The installer put pixi in a directory (e.g. `~/.pixi/bin`) that isn't on your `PATH` yet, or your current shell is caching the old `PATH`.
-
-**Fix:** Close the terminal and open a fresh one. If that still fails, add the pixi bin directory to your shell profile:
-
-```bash
-# ~/.zshrc or ~/.bashrc
-export PATH="$HOME/.pixi/bin:$PATH"
-```
-
-Then `source` the file or open a new terminal.
-
-### `pixi install` fails with SSL / certificate errors
-
-Extremely common on university networks (Cambridge Wi-Fi included) and behind corporate proxies. The resolver can't verify the certificate chain when downloading from conda-forge.
-
-**Fix, in order of preference:**
-
-- Switch to a different network (mobile hotspot works as a diagnostic).
-- Disable any active VPN and retry.
-- Ask IT about the correct SSL/CA bundle for your machine and set `SSL_CERT_FILE` accordingly.
-
-### VS Code doesn't see the pixi environment
-
-The interpreter picker only lists environments it knows how to find, and `.pixi/envs/default/` is inside your project — not a global location.
-
-**Fix:** Open the Command Palette → `Python: Select Interpreter` → **Enter interpreter path...**, and point it to:
-
-```text
-<project-root>/.pixi/envs/default/bin/python     (macOS/Linux)
-<project-root>/.pixi/envs/default/python.exe     (Windows)
-```
-
-For notebooks, do the same via the kernel picker (top-right of the notebook). See the [VS Code guide](vscode.md) for details.
-
-### Imports fail even though `pixi install` succeeded
-
-Almost always means you ran `python` from **outside** the pixi environment — e.g. your terminal's default `python` is the system one.
-
-**Fix:** Prefix every command with `pixi run`, or start an interactive session with `pixi shell`. To confirm which Python you are using:
+To check that a command really uses the environment's Python:
 
 ```bash
 pixi run python -c "import sys; print(sys.executable)"
@@ -461,21 +127,139 @@ pixi run python -c "import sys; print(sys.executable)"
 
 The path should contain `.pixi/envs/default/`.
 
-### Windows path or permission errors
+### Course tasks
 
-Long paths (`> 260 chars`) and OneDrive-managed folders both cause pixi to fail in confusing ways.
+The course `pixi.toml` defines these tasks, which you run with `pixi run <task>`:
 
-**Fix:** Clone the course repo into a **short path** near the drive root (e.g. `C:\dev\fun_ds`), avoid OneDrive/Documents, and prefer **Windows Terminal + PowerShell** over `cmd.exe`.
+| Task         | What it does                                                           |
+| ------------ | ---------------------------------------------------------------------- |
+| `install`    | Installs the course package `fun_ds` in editable mode (run once)       |
+| `test`       | Runs the unit tests in `tests/`                                        |
+| `check`      | Lints `src/` and `tests/` with ruff                                    |
+| `format`     | Auto-formats `src/` and `tests/` with ruff                             |
+| `lint`       | Runs all pre-commit hooks on all files                                 |
+| `docs-start` | Serves this book locally with live reload (for editing the book)       |
+| `docs-build` | Re-executes every notebook and builds the HTML book (slow, used by CI) |
 
 :::{warning}
-Avoid mixing tools for the same project (e.g., don't use pip globally and then expect your environment manager to "see" it).
-Always install packages via your chosen tool to keep the environment consistent.
+`docs-build` (via `docs-execute`) re-runs every lecture notebook **in place** and
+overwrites their outputs. That is what CI does. As a student you rarely need it:
+run notebooks in VS Code instead.
 :::
 
-### Other quick tips
+### Adding a package
 
-- If the pixi environment is not visible in VS Code, see the [VS Code guide](vscode.md) for how to point the interpreter selector to `.pixi/envs/default/`.
-- If you are on Windows, prefer PowerShell or Windows Terminal and keep paths short (avoid deeply nested folders).
+Want to try a library that isn't in the environment?
+
+```bash
+pixi add <package>                     # e.g. pixi add statsmodels
+```
+
+This installs it _and_ records it in `pixi.toml` and `pixi.lock`. In the course
+repository that modifies tracked files, so prefer doing it in your own project
+repositories. If you need it just for a quick experiment in the course repo,
+undo it afterwards with `git restore pixi.toml pixi.lock && pixi install`.
+
+:::{warning}
+Don't `pip install` into the pixi environment. pixi doesn't know about packages
+installed that way: they vanish or break on the next `pixi install`, and your
+classmates won't have them. If a package only exists on PyPI, use
+`pixi add --pypi <package>`.
+:::
+
+---
+
+## Starting your own pixi project
+
+For problem sets and your project you will set up a repository from scratch.
+The pattern:
+
+```bash
+mkdir my_project
+cd my_project
+pixi init                      # creates pixi.toml (and a .gitignore containing .pixi)
+pixi add python=3.13 pandas scikit-learn matplotlib ipykernel
+pixi add --feature test pytest
+pixi install
+```
+
+`ipykernel` is what lets VS Code run notebooks with this environment. Don't
+leave it out.
+
+A minimal `pixi.toml` with a task might then look like:
+
+```toml
+[workspace]
+name = "my_project"
+channels = ["conda-forge"]
+platforms = ["linux-64", "osx-64", "osx-arm64", "win-64"]
+
+[dependencies]
+python = "3.13.*"
+pandas = ">=2.2"
+scikit-learn = ">=1.5"
+matplotlib = "*"
+ipykernel = "*"
+
+[tasks]
+test = "python -m pytest -q"
+```
+
+:::{note}
+**Version specifiers.** `"*"` means "any version"; `">=2.2"` sets a minimum.
+The lockfile pins exact versions either way, but a bare `"*"` gives the solver
+freedom to pick a surprisingly _old_ version when some other package holds
+things back. **Set a lower bound on anything you depend on seriously.**
+:::
+
+Commit `pixi.toml` and `pixi.lock`; never commit the `.pixi/` folder. Check that
+`.pixi` is listed in `.gitignore` (`pixi init` adds it).
+
+---
+
+## Appendix: micromamba
+
+**micromamba** is a small, fast, conda-compatible package manager. It is a good
+choice if you prefer the classic conda "named environment" workflow for your
+own work. It is **not** needed for the course repository.
+
+**Install (macOS / Linux):**
+
+```bash
+"${SHELL}" <(curl -L micro.mamba.pm/install.sh)
+```
+
+**Install (Windows, PowerShell):**
+
+```powershell
+Invoke-Expression ((Invoke-WebRequest -Uri https://micro.mamba.pm/install.ps1 -UseBasicParsing).Content)
+```
+
+The installer offers to set up shell integration. Accept it, then open a new
+terminal and check `micromamba --version`.
+
+**Typical workflow:**
+
+```bash
+micromamba create -n myenv -c conda-forge python=3.13 numpy pandas scikit-learn ipykernel
+micromamba activate myenv
+micromamba install -n myenv -c conda-forge seaborn
+micromamba env export -n myenv > environment.yml    # share the spec
+```
+
+:::{warning}
+An exported `environment.yml` is **not a lockfile**. Recreating it months later
+can give different versions, which is exactly the problem pixi's lockfile
+solves.
+:::
+
+---
+
+## Troubleshooting
+
+Installation problems (`pixi: command not found`, SSL errors on university
+Wi-Fi, VS Code not seeing the environment, Windows path issues) are covered in
+[Day 1 Setup → Troubleshooting](quickstart.md#troubleshooting).
 
 ---
 

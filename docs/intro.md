@@ -45,9 +45,10 @@ pixi install
 pixi run install
 ```
 
-Open any notebook under `docs/lectures/` in VS Code and select the `pixi`
-Python environment as the kernel. See the [Getting Started](setup/environment_manager.md)
-section for a full walkthrough.
+Open the `fun_ds` folder in VS Code, open any notebook under `docs/lectures/`
+and select the pixi environment (`.pixi/envs/default`) as the kernel. New to
+git, pixi or VS Code? The step-by-step [Day 1 Setup](setup/quickstart.md) takes
+you from an empty laptop to a running notebook, with a check after every step.
 :::
 
 ---
@@ -56,11 +57,11 @@ section for a full walkthrough.
 
 The book is organised into three parts, each accessible from the sidebar:
 
-| Part                                                | Content                                                    |
-| --------------------------------------------------- | ---------------------------------------------------------- |
-| **[Getting Started](setup/environment_manager.md)** | Environment management, Git, VS Code, and pre-commit hooks |
-| **[Lectures 1–9](lectures/lecture_1.md)**           | The end-to-end data science lifecycle                      |
-| **[Software Engineering](swe/memory_profiling.md)** | Practical SWE tooling for data scientists                  |
+| Part                                                | Content                                                   |
+| --------------------------------------------------- | --------------------------------------------------------- |
+| **[Getting Started](setup/quickstart.md)**          | Day 1 setup, environments, VS Code, Git, pre-commit hooks |
+| **[Lectures 1–9](lectures/lecture_1.md)**           | The end-to-end data science lifecycle                     |
+| **[Software Engineering](swe/memory_profiling.md)** | Practical SWE tooling for data scientists                 |
 
 ---
 
@@ -92,12 +93,10 @@ helpers such as {py:func}`fun_ds.data.load_california_housing` and
 {py:func}`fun_ds.plotting.set_lecture_style` so that setup boilerplate is
 identical across notebooks.
 
-Install it in editable mode:
-
-```bash
-pixi install
-pixi run install
-```
+It is installed in editable mode by `pixi run install` (see
+[Day 1 Setup, Step 5](setup/quickstart.md#step-5-install-the-course-environment)),
+so any change you make under `src/fun_ds/` is picked up by the notebooks
+immediately.
 
 ---
 

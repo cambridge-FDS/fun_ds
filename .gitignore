@@ -126,3 +126,9 @@ mlruns
 
 # direnv
 .envrc
+
+# Local read-only mirror of the Overleaf lecture slides (pixi run slides-sync)
+slides/
+
+# Scratch output written by the Lecture 9 notebook (MLflow store, ONNX files, pickles)
+docs/lectures/_artifacts/

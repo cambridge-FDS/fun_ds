@@ -3,7 +3,7 @@ name = "fun_ds"
 version = "0.1.0"
 description = "Fundamentals of Data Science – MPhil EDS, Cambridge"
 channels = ["conda-forge"]
-platforms = ["osx-arm64", "osx-64", "linux-64"]
+platforms = ["osx-arm64", "osx-64", "linux-64", "win-64"]
 
 [dependencies]
 python = ">=3.11"
@@ -14,6 +14,7 @@ matplotlib = ">=3.7"
 seaborn = "*"
 scipy = "*"
 duckdb = "*"
+pyarrow = ">=15"  # Parquet I/O in pandas (Lectures 2–3)
 sqlalchemy = "*"
 ipykernel = "*"
 ipywidgets = "*"
@@ -31,20 +32,25 @@ altair = "*"
 polars = "*"
 # Modelling (Lecture 7)
 lightgbm = "*"
+xgboost = ">=2.0"
+# Tabular foundation model demo (Lecture 7). `tabicl-base` is TabICL without its
+# optional extras (wandb, transformers, shapiq); CPU-only PyTorch avoids CUDA.
+pytorch-cpu = "*"
+tabicl-base = ">=2.2"
 # Interpretability (Lecture 8)
 shap = "*"
-fairlearn = "*"
 interpret = "*"
 dalex = "*"
+setuptools = "<81"  # dalex still imports pkg_resources (removed in setuptools 81)
 # MLOps and deployment (Lecture 9)
-mlflow = "*"
+mlflow = ">=3.0"
 onnx = "*"
 onnxruntime = "*"
 skl2onnx = "*"
 pydantic = "*"
 fastapi = "*"
 httpx = "*"
-
+pandera = ">=0.20"  # data validation in CI (Lecture 9)
 
 [feature.test.dependencies]
 pytest = ">=7"
@@ -75,3 +81,5 @@ test = { cmd = "pytest", depends-on = ["install"] }
 lint = "pre-commit run --all-files"
 format = "ruff format src/ tests/"
 check = "ruff check src/ tests/"
+# Read-only local mirror of the Overleaf lecture slides (needs an Overleaf Git token)
+slides-sync = "bash -c 'if [ -d slides/.git ]; then git -C slides pull --ff-only; else git clone https://git.overleaf.com/66a959ab6c58291a0258122d slides && git -C slides remote set-url --push origin no_push; fi'"

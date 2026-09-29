@@ -7,7 +7,7 @@
 This guide explains how to set up **pre-commit hooks** for data science projects and why they are an important part of a professional workflow.
 
 :::{important}
-**The course repository already ships a `.pre-commit-config.yaml`.** You do **not** need to write one from scratch — clone the course repo, run `pre-commit install`, and you are done. The configuration below is documented here so you understand _what_ is running and _why_, and so you can reuse the pattern in your own projects.
+**The course repository already ships a `.pre-commit-config.yaml`, and `pre-commit` is already in the pixi environment.** You don't need to write or install anything. Run `pixi run pre-commit install` once inside the repository and you are done. The configuration below is the one the course uses; it is documented here so you understand _what_ is running and _why_, and so you can reuse it in your own projects.
 :::
 
 We focus on a **popular, battle-tested default configuration** that works well for:
@@ -67,84 +67,90 @@ Think of pre-commit as an automated "last sanity check" before code leaves your 
 
 ## Installing pre-commit
 
-Install pre-commit **inside your project environment** (recommended):
+**In the course repository** it is already part of the environment:
+
+```bash
+pixi run pre-commit --version
+```
+
+**In your own pixi project**, add it like any other package:
 
 ```bash
 pixi add pre-commit
-# or, if you are not using pixi:
-pip install pre-commit
-```
-
-Verify installation:
-
-```bash
-pre-commit --version
 ```
 
 ---
 
 ## Basic Setup
 
-In the root of your Git repository, create a file named:
+The hooks are configured in a file named `.pre-commit-config.yaml` in the root
+of the repository. For your own projects, copy the course's file (shown below)
+as a starting point.
 
-```text
-.pre-commit-config.yaml
-```
-
-This file defines which hooks run and how.
-
-Then install the hooks:
+Then install the hooks **once per clone**:
 
 ```bash
-pre-commit install
+pixi run pre-commit install
 ```
 
-This sets up Git so hooks run automatically on every commit.
+This writes a small script into `.git/hooks/`, so that Git runs the hooks
+automatically on every `git commit`, including commits made from VS Code's
+Source Control panel.
+
+:::{note}
+The first run takes a minute or two: pre-commit downloads and caches each tool
+in its own isolated environment (under `~/.cache/pre-commit`). Later runs take
+seconds.
+:::
 
 ---
 
-## Recommended Default Configuration
+## The Course Configuration
 
-Below is a **popular, sensible default** for Python + data science projects.
-
-It uses widely adopted tools and avoids overly strict rules.
+This is the course repository's `.pre-commit-config.yaml`:
 
 ```yaml
 repos:
+  # Python linting and formatting (fast, modern)
+  - repo: https://github.com/astral-sh/ruff-pre-commit
+    rev: v0.8.6
+    hooks:
+      - id: ruff
+        args: [--fix]
+      - id: ruff-format
+
+  # Static type checking
+  - repo: https://github.com/pre-commit/mirrors-mypy
+    rev: v1.13.0
+    hooks:
+      - id: mypy
+        additional_dependencies: [types-setuptools]
+        args: [--ignore-missing-imports]
+
   # General hygiene checks
   - repo: https://github.com/pre-commit/pre-commit-hooks
-    rev: v4.6.0
+    rev: v5.0.0
     hooks:
       - id: trailing-whitespace
       - id: end-of-file-fixer
       - id: check-yaml
-      - id: check-json
-      - id: check-merge-conflict
       - id: check-added-large-files
+        args: [--maxkb=500]
 
-  # Python code formatting
-  - repo: https://github.com/psf/black
-    rev: 24.8.0
+  # Consistent Markdown formatting
+  - repo: https://github.com/pre-commit/mirrors-prettier
+    rev: v3.1.0
     hooks:
-      - id: black
-        language_version: python3
-
-  # Python linting (fast, modern)
-  - repo: https://github.com/astral-sh/ruff-pre-commit
-    rev: v0.6.3
-    hooks:
-      - id: ruff
-        args: [--fix]
-
-  # Jupyter notebook cleanup
-  - repo: https://github.com/kynan/nbstripout
-    rev: 0.7.1
-    hooks:
-      - id: nbstripout
+      - id: prettier
+        files: "\\.md$"
 ```
 
+Ruff's settings (which rules, line length) live in `pyproject.toml` under
+`[tool.ruff]`, so the editor extension, `pixi run check` and the hook all
+agree.
+
 :::{note}
-The version numbers above (e.g. `rev: 24.8.0`) are illustrative and **will drift** as upstream projects release. Do not copy them blindly — instead, run:
+The version numbers above (e.g. `rev: v0.8.6`) are illustrative and **will drift** as upstream projects release. Do not copy them blindly — instead, run:
 
 ```bash
 pre-commit autoupdate
@@ -200,7 +206,8 @@ This prevents committing broken files by accident.
 
 #### `check-added-large-files`
 
-- Blocks committing very large files (default ~5MB)
+- Blocks committing large files (default 500 kB; the course sets it explicitly
+  with `--maxkb=500`)
 
 Why it matters:
 Large datasets and binaries **do not belong in Git**.
@@ -208,25 +215,22 @@ They should be stored externally or via data versioning tools.
 
 ---
 
-## Python Formatting: Black
+## Python Linting and Formatting: Ruff
 
-#### `black`
+#### `ruff-format`
 
-- Formats Python code automatically
-- Enforces a single, consistent style
+- Formats Python code (and notebook cells) automatically
+- Enforces a single, consistent style. It is a faster drop-in replacement for
+  the _Black_ formatter you may see in older projects
 - No configuration debates
 
 Why it matters:
 Formatting differences should never distract from logic or learning.
 
 :::{tip}
-If Black changes your code, **just accept it**.
+If the formatter changes your code, **just accept it**.
 It is intentionally opinionated.
 :::
-
----
-
-## Python Linting: Ruff
 
 #### `ruff`
 
@@ -247,7 +251,45 @@ Ruff catches mistakes that otherwise show up at runtime or grading time.
 
 ---
 
-## Jupyter Notebooks: nbstripout
+## Type Checking: mypy
+
+#### `mypy`
+
+- Reads your type hints (`def load(path: Path) -> pd.DataFrame:`) and checks
+  that the code is consistent with them, without running it
+- Catches e.g. passing a `str` where a `Path` was expected, or forgetting that a
+  function can return `None`
+
+Why it matters:
+Type errors are a large class of bugs that otherwise only appear when a rarely
+used code path finally runs. The course's `fun_ds` package is type-checked; see
+the `[tool.mypy]` section in `pyproject.toml`.
+
+---
+
+## Markdown: prettier
+
+#### `prettier`
+
+- Reformats Markdown files (tables, lists, line breaks) consistently
+
+Why it matters:
+Documentation is part of the codebase and deserves the same consistency.
+
+---
+
+## Optional for Your Own Repos: nbstripout
+
+The course repository keeps notebook outputs, because it doubles as this book.
+For problem-set and project repositories, stripping outputs is usually the
+better choice. Add this block to your `.pre-commit-config.yaml`:
+
+```yaml
+- repo: https://github.com/kynan/nbstripout
+  rev: 0.8.1
+  hooks:
+    - id: nbstripout
+```
 
 #### `nbstripout`
 
@@ -289,10 +331,24 @@ If hooks fail:
 - Fix the issue (often automatic)
 - Re-run `git commit`
 
+:::{important}
+When a hook **modifies** a file (e.g. the formatter rewrote it), the commit is
+aborted and the fixed file is left _unstaged_. This is the most common source
+of confusion. Just `git add` the file again and re-run `git commit`; the second
+attempt passes.
+
+```text
+ruff format..............................................................Failed
+- hook id: ruff-format
+- files were modified by this hook
+```
+
+:::
+
 Run hooks manually on all files:
 
 ```bash
-pre-commit run --all-files
+pixi run lint            # the course task; equivalent to: pixi run pre-commit run --all-files
 ```
 
 :::{tip}
@@ -344,7 +400,7 @@ jobs:
 This is the same command (`pre-commit run --all-files`) that you run locally, executed on GitHub's runners. If your local commit passes, the CI check will pass.
 
 :::{seealso}
-The course repository already wires this up — see [`.github/workflows/`](../../.github/workflows/) for the concrete workflow files used in class. Read them; they are short and illustrate the pattern above with a real environment.
+The course repository already wires this up. See [`.github/workflows/ci.yml`](https://github.com/cambridge-FDS/fun_ds/blob/main/.github/workflows/ci.yml) for the concrete workflow used in class: it installs the pixi environment with `prefix-dev/setup-pixi` and runs `pixi run lint`, `pixi run test` and a full book build on every pull request. Read it; it is short and shows the pattern above with a real environment.
 :::
 
 ---
@@ -389,11 +445,11 @@ In real projects:
 
 ## Recommended Workflow for This Course
 
-1. Install **pre-commit**
-2. Add `.pre-commit-config.yaml`
-3. Run `pre-commit install`
-4. Commit normally
-5. Let automation handle formatting and checks
+1. In the course repo: `pixi run pre-commit install` (once)
+2. In your own repos: copy the course's `.pre-commit-config.yaml`, add
+   `pre-commit` to the environment, run `pixi run pre-commit install`
+3. Commit normally
+4. If a hook rewrites files, `git add` them and commit again
 
 ---
 
@@ -402,10 +458,10 @@ In real projects:
 For this course, we recommend:
 
 - **pre-commit** for automation
-- **Black** for formatting
-- **Ruff** for linting
-- **nbstripout** for notebooks
+- **Ruff** for linting and formatting
+- **mypy** for type checking your package code
 - **pre-commit-hooks** for basic hygiene
+- **nbstripout** for notebooks in your own repositories
 
 This setup reflects **modern professional data science practice** while remaining beginner-friendly.
 
@@ -414,6 +470,6 @@ This setup reflects **modern professional data science practice** while remainin
 ## Further Reading
 
 - pre-commit documentation: https://pre-commit.com/
-- Black formatter: https://black.readthedocs.io/
+- mypy: https://mypy.readthedocs.io/
 - Ruff linter: https://docs.astral.sh/ruff/
 - nbstripout: https://github.com/kynan/nbstripout

@@ -39,6 +39,22 @@ Compared to alternatives:
 
 VS Code sits in the middle and is ideal for a fundamentals course.
 
+:::{admonition} VS Code or Cursor?
+:class: note
+The lecture slides show [Cursor](https://cursor.com/), an editor built on VS
+Code with added AI features. Layout, extensions, settings and shortcuts are the
+same, so everything on this page applies to both. Pick one and use it
+consistently.
+:::
+
+```{figure} figures/editor_layout.png
+:alt: An annotated editor window: repository file tree on the left, open files and code editor in the middle, terminal at the bottom, and an AI agent panel on the right.
+:width: 100%
+
+The main areas of the editor (screenshot: Cursor; VS Code has the same layout
+without the AI panel on the right).
+```
+
 ---
 
 ## Basic Installation
@@ -61,7 +77,14 @@ Extensions can also be installed from the terminal:
 ```bash
 code --install-extension ms-python.python
 code --install-extension ms-toolsai.jupyter
+code --install-extension charliermarsh.ruff
 ```
+
+:::{tip}
+On macOS the `code` command isn't on your `PATH` by default. Open the Command
+Palette and run **Shell Command: Install 'code' command in PATH** once. After
+that, `code .` opens the current folder in VS Code.
+:::
 
 ---
 
@@ -82,10 +105,13 @@ This is the most important extension. It provides:
 - Test discovery
 - Environment selection
 
-Install it from the Extensions panel or via:
+Install it from the Extensions panel (four-squares icon in the left sidebar):
 
-```text
-Extensions → search for "Python" (by Microsoft)
+```{figure} figures/install_python_extension.png
+:alt: The Extensions panel with "python" typed into the search box; the first result is the Python extension by ms-python with an Install button.
+:width: 100%
+
+Search for "python" and install the extension published by **ms-python**.
 ```
 
 :::{tip}
@@ -121,9 +147,20 @@ Ctrl/Cmd + Shift + P
 → Python: Select Interpreter
 ```
 
-Choose the environment created via **pixi** or **micromamba**.
+Choose the environment whose path contains `.pixi/envs/default`. This is the
+course's pixi environment, and it only appears if you opened the **project
+folder** (File → Open Folder… → `fun_ds`) and ran `pixi install`.
 
-If the pixi environment is not listed, enter the path manually. It is located at:
+```{figure} figures/select_interpreter.png
+:alt: The VS Code command palette with "Python: Select Interpreter" searched, followed by the interpreter list showing several environments with their paths.
+:width: 90%
+
+Selecting an interpreter. The screenshot shows conda environments; for the
+course repository pick the entry ending in `.pixi/envs/default/bin/python`.
+```
+
+If the pixi environment is not listed, run **Developer: Reload Window**, or
+choose **Enter interpreter path…** and paste the path. It is located at:
 
 ```text
 <project-root>/.pixi/envs/default/bin/python     (macOS/Linux)
@@ -145,6 +182,15 @@ To select the kernel for a notebook:
 2. Click the kernel selector in the **top-right corner** of the notebook (it shows the current kernel name, e.g. `Python 3`)
 3. Choose **Select Another Kernel → Python Environments**
 4. Pick the environment under `.pixi/envs/default/`
+
+The official [kernel management guide](https://code.visualstudio.com/docs/datascience/jupyter-kernel-management)
+shows each of these dialogs with screenshots.
+
+:::{note}
+Notebooks run with the notebook's own folder as the working directory. For
+lecture notebooks that is `docs/lectures/`, so relative paths in their code are
+relative to that folder, not to the repository root.
+:::
 
 :::{tip}
 The kernel selector and the interpreter selector are independent settings.
@@ -169,44 +215,26 @@ Provides:
 
 Usually installed automatically with the Python extension.
 
-### Black Formatter (recommended)
-
-**Extension name:** Black Formatter
-**Publisher:** Microsoft
-
-Black is an opinionated code formatter that:
-
-- enforces consistent formatting
-- removes style debates
-- is widely used in industry
-
-After installing, enable format-on-save:
-
-```text
-Settings → Format On Save → enabled
-```
-
-And set Black as the default formatter for Python.
-
-:::{tip}
-Consistent formatting makes collaboration and grading easier.
-:::
-
-### Ruff (optional but recommended)
+### Ruff (recommended)
 
 **Extension name:** Ruff
 **Publisher:** Astral Software
 
-Ruff is a very fast linter that replaces many older tools.
+Ruff is two tools in one:
 
-It detects:
+- a very fast **linter** that flags unused imports, undefined variables, common
+  bugs and style issues as you type;
+- a **formatter** that rewrites your code into one consistent style (a drop-in
+  replacement for the older _Black_ formatter), which removes style debates.
 
-- unused imports
-- undefined variables
-- common bugs
-- style issues
+The course repository's pre-commit hooks run exactly these two checks
+(`ruff` and `ruff-format`). With the extension installed and set as your
+formatter, your code is already in shape when you commit. See
+[Recommended settings](#recommended-settings-minimal) below.
 
-Ruff works well alongside Black.
+:::{tip}
+Consistent formatting makes collaboration and grading easier.
+:::
 
 ---
 
@@ -296,7 +324,7 @@ Learning a handful of shortcuts pays for itself within a week. These are the one
 | `F2`              | `F2`                     | Rename symbol (across the whole project)  |
 | `Cmd + .`         | `Ctrl + .`               | Quick fix / show code actions             |
 | `Cmd + Shift + F` | `Ctrl + Shift + F`       | Search across all files                   |
-| `Cmd + \``        | `Ctrl + \``              | Toggle the integrated terminal            |
+| `` Cmd + ` ``     | `` Ctrl + ` ``           | Toggle the integrated terminal            |
 | `Cmd + Shift + O` | `Ctrl + Shift + O`       | Go to symbol in file                      |
 
 :::{tip}
@@ -354,28 +382,32 @@ The first hour you spend learning the debugger feels slow. Every hour after that
 
 ## Recommended Settings (Minimal)
 
-You do **not** need heavy customization. The following are helpful defaults:
-
-- enable format on save
-- show whitespace
-- enable Python linting
-
-Example minimal settings snippet:
+You do **not** need heavy customisation. Open your user settings as JSON
+(Command Palette → **Preferences: Open User Settings (JSON)**) and add:
 
 ```json
 {
   "editor.formatOnSave": true,
+  "editor.renderWhitespace": "boundary",
   "python.analysis.typeCheckingMode": "basic",
-  "editor.renderWhitespace": "boundary"
+  "[python]": {
+    "editor.defaultFormatter": "charliermarsh.ruff"
+  },
+  "notebook.formatOnSave.enabled": true
 }
 ```
 
+This formats Python files and notebook cells with Ruff every time you save,
+shows trailing whitespace, and enables basic type checking in Pylance.
+
 ### Project-level settings (`.vscode/settings.json`)
 
-You can commit a `.vscode/settings.json` file to a project so all contributors share the same editor settings.
-The course repository ships one — when you open the project in VS Code, these settings activate automatically.
-
-This is how the course enforces consistent formatting and interpreter behaviour across everyone's machines.
+The same settings can live in a `.vscode/settings.json` file inside a project,
+where they apply only to that project and can be shared with collaborators by
+committing the file. The course repository doesn't ship one (it ignores
+`.vscode/`, so your personal settings stay private). For your own group
+repositories, a shared `.vscode/settings.json` is a good way to make everyone
+format code the same way.
 
 ---
 
@@ -400,12 +432,12 @@ Check the interpreter (bottom status bar) and the notebook kernel (top-right pic
 2. Install extensions:
    - Python
    - Jupyter
-   - Black Formatter
-   - (Optional) Ruff
-3. Clone or open the course project
-4. Run `pixi install`
-5. Select the correct Python interpreter (`.pixi/envs/default/`)
-6. Select the correct Jupyter kernel when opening notebooks
+   - Ruff
+3. Clone the course repository and run `pixi install` + `pixi run install`
+   (see [Day 1 Setup](quickstart.md))
+4. **File → Open Folder…** and choose the repository root (`fun_ds`)
+5. Select the Python interpreter (`.pixi/envs/default/`) for scripts
+6. Select the same environment as the Jupyter kernel when opening notebooks
 7. Open notebooks or scripts and start working
 
 ---
@@ -427,5 +459,5 @@ This setup mirrors modern professional data science workflows while remaining ac
 
 - VS Code Python docs: https://code.visualstudio.com/docs/python/python-tutorial
 - VS Code Jupyter docs: https://code.visualstudio.com/docs/datascience/jupyter-notebooks
-- Black formatter: https://black.readthedocs.io/
+- VS Code kernel management (with screenshots): https://code.visualstudio.com/docs/datascience/jupyter-kernel-management
 - Ruff linter: https://docs.astral.sh/ruff/

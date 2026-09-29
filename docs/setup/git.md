@@ -21,7 +21,8 @@ What matters is understanding the _ideas_ and knowing where things go wrong.
 It lets you go back to previous versions, compare changes, and work safely.
 
 **GitHub**
-: A platform that hosts Git repositories and adds: - collaboration tools - issue tracking - pull requests - code review - CI/CD integration
+: A platform that hosts Git repositories and adds collaboration tools: issue
+tracking, pull requests, code review and CI/CD integration.
 
 :::{tip}
 Git is the _engine_; GitHub is the _platform_ built on top of it.
@@ -99,6 +100,9 @@ Check that Git is installed:
 git --version
 ```
 
+If it isn't, [Day 1 Setup → Step 1](quickstart.md#step-1-install-git) shows how
+to install it on macOS, Windows and Linux.
+
 Configure your identity (do this once):
 
 ```bash
@@ -108,12 +112,30 @@ git config --global user.email "your.email@example.com"
 
 :::{note}
 This information appears in commit history.
-Use a professional name/email.
+Use a professional name/email, and use the same email as your GitHub account
+so that GitHub links your commits to your profile.
 :::
 
 ---
 
 ## Creating or Cloning a Repository
+
+There are three ways to get a repository onto your machine, and they fit
+different situations:
+
+| You want to…                                              | Do this                                                            |
+| --------------------------------------------------------- | ------------------------------------------------------------------ |
+| **Follow along** with someone else's repo (e.g. `fun_ds`) | **Clone** it                                                       |
+| **Build on** someone else's repo and push your changes    | **Fork** it on GitHub, then clone _your fork_                      |
+| **Start** a new project                                   | Create an empty repo on GitHub and clone it, or `git init` locally |
+
+```{figure} figures/github_clone.png
+:alt: A GitHub repository page with the green Code button opened, showing the Local tab, the Clone section and the HTTPS URL. The Fork button at the top right is also highlighted.
+:width: 80%
+
+**Code → Local → HTTPS** gives you the URL to clone. **Fork** (top right)
+creates a copy under your own GitHub account that you can push to.
+```
 
 Clone an existing repository:
 
@@ -128,6 +150,9 @@ Create a new repository locally:
 git init
 ```
 
+You can also clone from inside VS Code: Command Palette → **Git: Clone**, paste
+the URL, choose a folder.
+
 ---
 
 ## Ignoring Files: `.gitignore`
@@ -141,7 +166,8 @@ Create one in the root of your repository:
 touch .gitignore
 ```
 
-A sensible default for data science projects:
+A sensible default for data science projects (GitHub also offers a
+ready-made `Python` template when you create a repository):
 
 ```text
 # Python
@@ -185,11 +211,21 @@ Set up `.gitignore` **before** your first commit, or use `git rm --cached <file>
 
 ## GitHub Authentication
 
-To push and pull from GitHub, you need to authenticate. There are two main approaches:
+Cloning and pulling a **public** repository needs no login. To **push** (or to
+access a private repository) you need to authenticate. There are two main
+approaches; pick one.
 
-### Option 1: SSH Key (recommended)
+:::{tip}
+If you use VS Code's **Source Control** panel or Git for Windows, you will often
+get a browser pop-up asking you to sign in to GitHub the first time you push.
+Accepting it sets up HTTPS authentication for you (Option 2), and you can skip
+the rest of this section.
+:::
 
-Generate a key (if you don't have one):
+### Option 1: SSH Key
+
+Generate a key (if you don't have one). Accept the default file location and
+choose a passphrase:
 
 ```bash
 ssh-keygen -t ed25519 -C "your.email@example.com"
@@ -201,8 +237,8 @@ Copy the public key to your clipboard:
 # macOS
 cat ~/.ssh/id_ed25519.pub | pbcopy
 
-# Linux
-cat ~/.ssh/id_ed25519.pub | xclip -selection clipboard
+# Linux (or anywhere: print it and copy by hand)
+cat ~/.ssh/id_ed25519.pub
 
 # Windows (PowerShell)
 Get-Content ~/.ssh/id_ed25519.pub | Set-Clipboard
@@ -216,6 +252,9 @@ Test the connection:
 ssh -T git@github.com
 ```
 
+The first time, answer `yes` to the host-authenticity question. Success looks
+like `Hi <username>! You've successfully authenticated…`.
+
 When cloning with SSH, use the SSH URL:
 
 ```bash
@@ -226,13 +265,14 @@ git clone git@github.com:username/repository.git
 
 GitHub no longer accepts your password over HTTPS. Instead, create a **Personal Access Token (PAT)**:
 
-1. Go to **GitHub → Settings → Developer settings → Personal access tokens → Tokens (classic)**
-2. Generate a token with `repo` scope
+1. Go to **GitHub → Settings → Developer settings → Personal access tokens → Fine-grained tokens**
+2. Generate a token with access to the repositories you need and **Contents: Read and write** permission
 3. Use the token as your password when Git prompts you
 
 :::{tip}
-On macOS, Git Credential Manager can cache your token automatically.
-On Windows, Git for Windows includes the credential manager by default.
+Git for Windows ships the Git Credential Manager, which stores the token (or
+does a browser login) for you. On macOS the built-in keychain helper remembers
+it after the first use. Either way you only type it once.
 :::
 
 See the [GitHub authentication docs](https://docs.github.com/en/authentication) for full details.
@@ -347,6 +387,9 @@ Push commits:
 git push origin main
 ```
 
+(In practice you rarely push to `main` directly. See
+[Branching](#branching-highly-recommended) below.)
+
 Pull updates:
 
 ```bash
@@ -385,7 +428,9 @@ Work, commit, then push:
 git push -u origin feature-cleaning
 ```
 
-Open a **Pull Request** on GitHub to merge into `main`.
+Open a **Pull Request** on GitHub to merge into `main`. After a push, GitHub
+shows a yellow banner with a **Compare & pull request** button on the
+repository page.
 
 :::{note}
 Pull Requests are not just for teams — they are excellent for reviewing your own work.
@@ -506,10 +551,14 @@ pip install nbstripout   # or: pixi add nbstripout
 nbstripout --install
 ```
 
-From then on, Git automatically strips outputs from notebooks _on the way into the repo_ while leaving them intact in your working copy. Your local runs keep their plots and results; the committed version stays clean. The course repository already ships a `.gitattributes` — you just need to install `nbstripout` locally once.
+From then on, Git automatically strips outputs from notebooks _on the way into the repo_ while leaving them intact in your working copy. Your local runs keep their plots and results; the committed version stays clean. This is a good default for **your own** repositories (problem sets, project).
 
 :::{note}
-This is complementary to the `nbstripout` **pre-commit hook** covered in the [pre-commit guide](pre-commit-hooks.md). The Git filter runs on every operation; the hook runs on commit. Belt and braces.
+The course repository deliberately does **not** strip outputs. It is a book, and
+the committed outputs let you read every result on GitHub without running
+anything. The trade-off is that re-running a lecture notebook changes tracked
+files. See [Day 1 Setup → Experiment in your own files](quickstart.md#experiment-in-your-own-files)
+for how to handle that.
 :::
 
 ---
@@ -532,11 +581,51 @@ Then commit.
 
 ### "I committed the wrong thing"
 
-If not pushed yet:
+If not pushed yet, fix the files, `git add` them, then:
 
 ```bash
 git commit --amend
 ```
+
+This replaces the last commit. Don't amend commits you've already pushed to a
+shared branch.
+
+---
+
+### "I have a merge conflict"
+
+Two branches changed the same lines, and Git needs you to decide which version
+wins. VS Code highlights the conflicting blocks and offers one-click options
+above each one:
+
+```{figure} figures/merge_conflict.png
+:alt: VS Code showing a Python file with a merge conflict. The HEAD (current change) block is highlighted green and the incoming change from main blue, with "Accept Current Change | Accept Incoming Change | Accept Both Changes | Compare Changes" links above. The terminal below shows the git merge main command reporting the conflict.
+:width: 90%
+
+A merge conflict in VS Code after `git merge main`. Choose **Accept Current**,
+**Accept Incoming** or **Accept Both**, or edit the block by hand. Then save
+the file.
+```
+
+Once every conflict is resolved:
+
+```bash
+git add <resolved-file>
+git commit
+```
+
+[Lecture 2](../lectures/lecture_2.ipynb) discusses why notebook conflicts are
+particularly painful.
+
+---
+
+### "`git pull` says my local changes would be overwritten"
+
+You have uncommitted edits to files that the pull wants to update, which in the
+course repository usually means a lecture notebook you re-ran. Either discard
+them (`git restore <file>`), or park them with `git stash`, pull, and
+`git stash pop`. See also
+[Day 1 Setup → Getting updates](quickstart.md#getting-updates-to-the-course-material).
 
 ---
 
@@ -583,12 +672,20 @@ Git is **not**:
 
 ## Recommended Workflow for This Course
 
-1. Clone the course repository
-2. Create a feature branch for each task
-3. Commit frequently
-4. Push regularly
-5. Open Pull Requests for review
-6. Keep `main` clean and working
+**The course repository (`fun_ds`)** is read-only for you:
+
+1. Clone it once
+2. `git pull` regularly to get updates
+3. Experiment in `private_*` copies, which git ignores
+
+**Your own and your group's repositories** (problem sets, project) are where
+you practise the professional workflow:
+
+1. Create a feature branch for each task
+2. Commit small, focused changes frequently
+3. Push regularly
+4. Open Pull Requests and review each other's work
+5. Keep `main` clean and working
 
 ---
 

@@ -35,9 +35,10 @@ project:
     - file: intro.md
     - title: Getting Started
       children:
+        - file: setup/quickstart.md
         - file: setup/environment_manager.md
-        - file: setup/git.md
         - file: setup/vscode.md
+        - file: setup/git.md
         - file: setup/pre-commit-hooks.md
     - title: Lectures
       children:

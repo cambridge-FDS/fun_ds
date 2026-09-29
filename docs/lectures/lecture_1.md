@@ -8,6 +8,8 @@ After this lecture, you will be able to:
 - Explain why software engineering discipline is critical for reliable data science
 - Distinguish Breiman's _data modelling_ and _algorithmic modelling_ cultures
 - Transition from monolithic notebook code to modular Python packages
+- Make functions robust and readable with type hints, exceptions, portable
+  paths, central configuration and docstrings
 - Use Git and GitHub for collaborative, reproducible data science
   :::
 
@@ -166,8 +168,8 @@ cited framework in industrial data-mining surveys, and its central insight
 MLOps literature. {cite:t}`huyen2022designing` argues that the design of an
 ML system is dominated by the feedback loops between its stages: the
 faster you can iterate from a monitoring signal back to a retrained model,
-the more value the system creates. Treat the diagram in §4 as a _state
-machine_ rather than a pipeline; the transitions you cannot short-circuit
+the more value the system creates. Treat the workflow diagram above as a
+_state machine_ rather than a pipeline; the transitions you cannot short-circuit
 in production determine your architecture.
 
 ### Reproducibility as an epistemological principle
@@ -216,9 +218,11 @@ project/
 └── README.md
 ```
 
-This structure is exactly how the `fun_ds` package accompanying this book
-is organised. Compare with the "good enough practices"
-of {cite:t}`wilson2017good` and the maxims of
+The `fun_ds` package accompanying this book follows the same idea, split by
+pipeline stage: `src/fun_ds/data.py` (loading), `transforms/` (feature
+engineering), `model/` (selection and diagnostics), `evaluation.py` and
+`metrics/`, with a matching `tests/` folder. Compare with the "good enough
+practices" of {cite:t}`wilson2017good` and the maxims of
 {cite:t}`kernighan1999practice`.
 
 ---
@@ -238,6 +242,10 @@ Python is the dominant language for machine learning because of its
 ecosystem — NumPy {cite}`harris2020numpy`, pandas {cite}`mckinney2010pandas`,
 scikit-learn {cite}`pedregosa2011scikit`, matplotlib {cite}`hunter2007matplotlib`,
 and PyTorch — and its ability to bridge exploration and production.
+
+The live demos in the lecture use Cursor, a fork of VS Code with added AI
+features; its layout, extensions, and interpreter selection are identical, so
+everything in the VS Code setup guide applies to either editor.
 
 :::{note}
 The course focuses on **concepts**, not specific packages. Libraries change;
@@ -328,7 +336,10 @@ An orchestration script (or _entry point_):
   logic (what happens once during EDA)
 - eliminates hidden notebook state
 
-A typical `pyproject.toml` exposes it as a CLI command:
+A typical `pyproject.toml` exposes it as a CLI command. Note that an entry
+point must be importable, so the script lives _inside_ the package (here
+`src/mypkg/scripts/train.py`); a top-level `scripts/` folder, as in the
+layout above, is run directly with `python scripts/train.py` instead:
 
 ```toml
 [project.scripts]
@@ -343,6 +354,228 @@ train --config configs/experiment_a.yaml
 
 This is the seed of the deployment pipeline you will build in
 [Lecture 9](lecture_9.ipynb).
+
+---
+
+## Writing Robust Code
+
+Modular code tells you _where_ logic lives; robust code makes sure that logic
+keeps working when someone else runs it, on another machine, with slightly
+different data. Five habits cover most of the ground:
+
+- functions have clearly defined input and output types;
+- the core functionality is tested;
+- edge cases and known issues are handled gracefully;
+- paths work across machines, users and working directories;
+- settings live in one central place.
+
+A sixth, easy one: do not ignore `FutureWarning`s and `DeprecationWarning`s.
+They are the library telling you which line of your code will break at the
+next upgrade.
+
+### Type hints
+
+A good function states what goes in and what comes out. Compare
+
+```python
+def multi_two_numbers(a, b):
+    return a * b
+```
+
+with
+
+```python
+def multi_two_numbers(a: int, b: int) -> int:
+    return a * b
+```
+
+The second version documents its contract in the signature itself, and your
+IDE can use it for autocompletion and warnings. Hints work with default
+arguments and with inputs that may take one of several types (`X | Y`, Python
+3.10+):
+
+```python
+def greet(name: str = "World") -> str:
+    return f"Hello, {name}!"
+
+
+def multi_two_numbers(a: int | float, b: int | float) -> int | float:
+    return a * b
+```
+
+Python does **not** enforce type hints at run time. With the `int` version
+above, this call runs without complaint:
+
+```python
+multi_two_numbers(2, "2.0")  # returns '2.02.0': an int times a str repeats the str
+```
+
+That silent success is worse than a crash. A static type checker such as
+[mypy](https://mypy.readthedocs.io/en/stable/cheat_sheet_py3.html) reads the
+hints without running the code and flags the mismatch. Given this `example.py`
+
+```python
+def multi_two_numbers(a: int, b: int) -> int:
+    return a * b
+
+
+num_1: int = 2
+result = multi_two_numbers(num_1, "2.0")
+```
+
+mypy reports
+
+```text
+$ mypy example.py
+example.py:6: error: Argument 2 to "multi_two_numbers" has incompatible type "str"; expected "int"  [arg-type]
+Found 1 error in 1 file (checked 1 source file)
+```
+
+You rarely call mypy by hand: the course's
+[pre-commit hooks](../setup/pre-commit-hooks.md) run it on every commit.
+
+### Tests
+
+Type checks catch the wrong _kind_ of input; tests check that the code does
+the right _thing_. Three kinds are worth knowing from the start:
+
+| Test type        | Purpose                                               | Example                                                               |
+| ---------------- | ----------------------------------------------------- | --------------------------------------------------------------------- |
+| Unit test        | Checks one function in isolation                      | A custom scaling function handles a `NaN` correctly                   |
+| Integration test | Checks that several components work together          | The pipeline reads from a database and writes to a storage location   |
+| Smoke test       | A fast, shallow check that nothing crashes end to end | The training script runs on a small sample and returns a results dict |
+
+A smoke test on a tiny slice of the data is the cheapest insurance you can
+buy while a project is small. We write proper tests with `pytest` in
+[Lecture 6](lecture_6.ipynb); Research Computing covers testing in more depth.
+
+### Handling edge cases with exceptions
+
+Some failures are expected and have a sensible fallback. Without handling,
+dividing by zero stops the whole pipeline:
+
+```python
+def divide(a: float, b: float) -> float:
+    return a / b  # divide(1, 0) raises ZeroDivisionError
+```
+
+A `try`/`except` block states what should happen instead:
+
+```python
+def divide(a: float, b: float) -> float:
+    """If b is zero, return infinity instead of crashing."""
+    try:
+        return a / b
+    except ZeroDivisionError:
+        return float("inf")
+```
+
+Catch the _specific_ exception you expect (`ZeroDivisionError`, `KeyError`,
+`FileNotFoundError`, ...), never a bare `except:`, which would also swallow
+genuine bugs. The decision rule: handle with an exception what you know can
+happen and know how to recover from; everything else should fail loudly and
+be caught by a test.
+
+### Paths that work anywhere
+
+Paths are the most common reason a colleague's code fails on your laptop.
+All three of these are fragile:
+
+```python
+import pandas as pd
+
+df = pd.read_csv("/Users/niklas/data/myfile.csv")  # only works for Niklas
+df = pd.read_csv("data/myfile.csv")  # only works from the repo root
+df = pd.read_csv("S:\\Main Folder\\data\\myfile.csv")  # only works on Windows
+```
+
+The standard-library `pathlib` builds an absolute path relative to the file
+that contains the code, independent of user, working directory and operating
+system:
+
+```python
+from pathlib import Path
+
+import pandas as pd
+
+# In src/mypkg/data_load.py: go up to the repo root, then into data/
+DATA_PATH = Path(__file__).parent.parent.parent / "data" / "myfile.csv"
+df = pd.read_csv(DATA_PATH)
+```
+
+[Lecture 4](lecture_4.ipynb) covers `pathlib` in detail.
+
+### Settings in one place
+
+Hard-coded parameters scattered across a notebook (a random seed here, a
+test-set share there) are easy to change in one place and forget in another.
+Collect them in a single configuration file:
+
+```yaml
+# configs/experiment_a.yaml
+data:
+  path: data/housing.parquet
+model:
+  test_size: 0.2
+  random_state: 42
+```
+
+and read it once, at the start of the orchestration script:
+
+```python
+from pathlib import Path
+
+import yaml
+
+config = yaml.safe_load(Path("configs/experiment_a.yaml").read_text())
+test_size = config["model"]["test_size"]  # 0.2
+```
+
+A plain dictionary is enough to start with. For larger projects, Pydantic
+models validate the config (types, ranges, required keys) as it is loaded;
+we use Pydantic for input validation in [Lecture 9](lecture_9.ipynb).
+
+---
+
+## Documenting Your Code
+
+Code is written once and read many times: by your future self a year from
+now, by a colleague, by whoever inherits the project when you leave, or by
+you reviewing a first draft written by a coding agent. Three layers of
+documentation serve these readers.
+
+The **README** is the front door of the repository. It typically covers what
+the project does, how to install it, how to run the key scripts, a short
+example, the repository structure, and authorship and licence. It is written
+in [Markdown](https://www.markdownguide.org/getting-started/).
+
+**Docstrings** are triple-quoted strings at the start of a module or function.
+A module docstring explains what the file is for and how it fits into the
+code base; a function docstring explains its purpose, inputs and outputs:
+
+```python
+def multi_two_numbers(a: int, b: int) -> int:
+    """Multiply numbers a and b.
+
+    Args:
+        a: The first factor (multiplier).
+        b: The second factor (multiplicand).
+
+    Returns:
+        The product of a and b.
+    """
+    return a * b
+```
+
+Together with type hints, a docstring means nobody has to read the function
+body to use it correctly. `help(multi_two_numbers)` and your IDE's hover text
+both display it.
+
+**Comments** explain _why_ a line is written the way it is, not _what_ it
+does. Keep them short, accurate and in English, and prefer a clear variable
+or function name to a comment that explains an unclear one. Larger projects
+add a `CONTRIBUTING.md`, a `CHANGELOG.md`, or background notes on data
+sources and models.
 
 ---
 
@@ -389,7 +622,8 @@ Version control is "undo" with memory. The real value is not what it
 prevents — it is the _confidence to experiment_ it enables.
 :::
 
-For an in-depth walkthrough, see [Lecture 2, §1](lecture_2.ipynb) and the
+For an in-depth walkthrough, see
+[Lecture 2](lecture_2.ipynb#version-control-with-git) and the
 [Git setup guide](../setup/git.md).
 
 ### Code review as a social process
@@ -486,6 +720,8 @@ would not be caught by a passing test on training data.
   between causal econometrics and predictive ML; both matter.
 - **Structure matters as much as models**: mirror the pipeline in the codebase.
 - Notebooks are a **tool**, not a foundation — extract logic into a package.
+- **Robust code** states its types, handles expected failures, uses portable
+  paths and keeps settings and documentation in one place.
 - **Git and pull requests** are the operating system of collaboration.
 - Strong SWE skills amplify data-science impact and make experiments trustworthy.
   :::
