@@ -5,7 +5,7 @@ from __future__ import annotations
 import numpy as np
 import pandas as pd
 from numpy.typing import ArrayLike
-from sklearn.base import BaseEstimator, TransformerMixin
+from sklearn.base import BaseEstimator, OneToOneFeatureMixin, TransformerMixin
 from sklearn.model_selection import KFold
 from sklearn.utils.validation import check_is_fitted
 
@@ -50,7 +50,7 @@ class CyclicalEncoder(TransformerMixin, BaseEstimator):
         return [f"{name}_sin", f"{name}_cos"]
 
 
-class TargetEncoder(TransformerMixin, BaseEstimator):
+class TargetEncoder(OneToOneFeatureMixin, TransformerMixin, BaseEstimator):
     """Mean target encoding with k-fold cross-fitting to prevent leakage.
 
     Naïve mean encoding — replacing each category with its global target
@@ -117,6 +117,7 @@ class TargetEncoder(TransformerMixin, BaseEstimator):
         """
         x_series = pd.Series(np.asarray(X).ravel())
         y_series = pd.Series(np.asarray(y, dtype=float))
+        self.n_features_in_ = 1
         self.global_mean_ = float(y_series.mean())
         self.encoding_ = self._smoothed_mean(x_series, y_series, self.global_mean_)
         return self
@@ -135,6 +136,7 @@ class TargetEncoder(TransformerMixin, BaseEstimator):
         x_series = pd.Series(x_arr)
         y_series = pd.Series(y_arr)
 
+        self.n_features_in_ = 1
         self.global_mean_ = float(y_series.mean())
         out = np.full(len(x_arr), self.global_mean_)
 

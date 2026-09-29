@@ -2,10 +2,10 @@
 
 import numpy as np
 from numpy.typing import ArrayLike
-from sklearn.base import BaseEstimator, TransformerMixin
+from sklearn.base import BaseEstimator, OneToOneFeatureMixin, TransformerMixin
 
 
-class LogTransformer(TransformerMixin, BaseEstimator):
+class LogTransformer(OneToOneFeatureMixin, TransformerMixin, BaseEstimator):
     """Apply log(x + offset) transformation.
 
     Useful for right-skewed features such as income or house prices,
@@ -23,6 +23,8 @@ class LogTransformer(TransformerMixin, BaseEstimator):
 
     def fit(self, X: ArrayLike, y: ArrayLike | None = None) -> "LogTransformer":
         """No-op: transformation has no learnable parameters."""
+        # Record the input width so scikit-learn recognises the step as fitted.
+        self.n_features_in_ = np.asarray(X).shape[1] if np.ndim(X) > 1 else 1
         return self
 
     def transform(self, X: ArrayLike) -> np.ndarray:
@@ -34,7 +36,7 @@ class LogTransformer(TransformerMixin, BaseEstimator):
         return np.exp(np.asarray(X, dtype=np.float64)) - self.offset
 
 
-class OutlierClipper(TransformerMixin, BaseEstimator):
+class OutlierClipper(OneToOneFeatureMixin, TransformerMixin, BaseEstimator):
     """Clip values outside quantile-based bounds (Winsorisation).
 
     Learns the lower and upper fences from training data and applies
@@ -65,6 +67,7 @@ class OutlierClipper(TransformerMixin, BaseEstimator):
     def fit(self, X: ArrayLike, y: ArrayLike | None = None) -> "OutlierClipper":
         """Compute quantile bounds from training data."""
         X_arr = np.asarray(X, dtype=np.float64)
+        self.n_features_in_ = X_arr.shape[1] if X_arr.ndim > 1 else 1
         self.lower_bound_ = np.quantile(X_arr, self.lower_quantile, axis=0)
         self.upper_bound_ = np.quantile(X_arr, self.upper_quantile, axis=0)
         return self

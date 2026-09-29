@@ -52,6 +52,11 @@ fastapi = "*"
 httpx = "*"
 pandera = ">=0.20"  # data validation in CI (Lecture 9)
 
+[feature.app.dependencies]
+# Interactive feature-engineering playground (Lecture 5, apps/fe_playground)
+streamlit = ">=1.50"
+starlette = ">=0.47"  # streamlit >=1.5x imports starlette APIs its conda metadata does not pin
+
 [feature.test.dependencies]
 pytest = ">=7"
 pytest-cov = "*"
@@ -66,10 +71,11 @@ hatch-vcs = "*"
 pip = "*"
 
 [environments]
-default = { features = ["docs", "test", "lint", "dev"], solve-group = "default" }
+default = { features = ["docs", "test", "lint", "dev", "app"], solve-group = "default" }
 docs = { features = ["docs", "dev"], solve-group = "default" }
 test = { features = ["test", "dev"], solve-group = "default" }
 lint = { features = ["lint"], solve-group = "default" }
+app = { features = ["app", "dev"], solve-group = "default" }
 
 [tasks]
 install = "pip install --no-build-isolation -e ."
@@ -77,6 +83,7 @@ docs-execute = { cmd = "jupyter nbconvert --to notebook --execute --inplace --Ex
 docs-build = { cmd = "jupyter-book build --html", cwd = "docs", depends-on = ["docs-execute"] }
 docs-start = { cmd = "jupyter-book start", cwd = "docs", depends-on = ["install"] }
 docs-clean = "rm -rf docs/_build"
+fe-app = { cmd = "streamlit run apps/fe_playground/app.py", depends-on = ["install"] }
 test = { cmd = "pytest", depends-on = ["install"] }
 lint = "pre-commit run --all-files"
 format = "ruff format src/ tests/"

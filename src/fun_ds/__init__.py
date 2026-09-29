@@ -5,6 +5,7 @@ Subpackages
 data        : dataset loaders and synthetic generators
 eda         : exploratory data analysis (DataProfiler)
 transforms  : sklearn-compatible feature transformers and encoders
+features    : California Housing feature-engineering recipes (Lecture 5)
 model       : model selection and OLS diagnostics
 metrics     : regression evaluation metrics
 interpretation : PDP, ICE and ALE feature-effect curves
@@ -22,6 +23,7 @@ except PackageNotFoundError:
 # Flat convenience imports — one line to get the most common utilities
 from fun_ds.data import load_california_housing, make_regression_dataset
 from fun_ds.eda import DataProfiler
+from fun_ds.features import build_fe_pipeline, cv_rmse
 from fun_ds.interpretation import ale_1d, ice_matrix, partial_dependence_1d
 from fun_ds.metrics import regression_report
 from fun_ds.model import OLSDiagnostics, compare_models, cross_val_summary
@@ -45,6 +47,9 @@ __all__ = [
     "OutlierClipper",
     "CyclicalEncoder",
     "TargetEncoder",
+    # features
+    "build_fe_pipeline",
+    "cv_rmse",
     # model
     "cross_val_summary",
     "compare_models",
