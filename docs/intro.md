@@ -25,6 +25,16 @@ Read it in three complementary ways:
 3. **Extend.** Complete the _Exercises_ at the end of each notebook and
    integrate them into your own portfolio repository.
 
+:::{admonition} Where theory lives in this programme
+:class: seealso
+This course is **deliberately applied**. We build, evaluate, and deploy models —
+but we defer formal statistical theory (convergence guarantees, asymptotic
+distributions, causal identification) to D200 and D300 in Lent Term. If you find
+yourself wanting the "why does this estimator work?" proof, that is by design:
+this module gives you the practical intuition and working code, so the theory
+lands when you encounter it next term.
+:::
+
 :::{admonition} Running the notebooks locally
 :class: tip
 

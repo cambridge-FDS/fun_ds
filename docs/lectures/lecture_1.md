@@ -42,7 +42,10 @@ By the end of the course you should be able to:
 :::{note}
 Applied does **not** mean superficial. You will implement concepts deeply,
 but always with practical purpose. Where a theoretical result matters, we
-cite the primary source.
+cite the primary source. Formal proofs and asymptotic theory belong to D200
+(Machine Learning in Economics) and D300 (Causal Inference and Machine
+Learning) next term — this course builds the engineering intuition that makes
+that theory land.
 :::
 
 ---

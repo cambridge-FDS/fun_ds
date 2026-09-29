@@ -63,6 +63,7 @@ site:
     hide_toc: false
     hide_search: false
     hide_footer_links: false
+    style: banner.css
   actions:
     - title: GitHub
       url: https://github.com/cambridge-FDS/fun_ds
