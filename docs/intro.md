@@ -89,8 +89,8 @@ housing-price regression model from data acquisition (L2) to deployment (L9).
 Throughout the lectures we use a shared Python library,
 [`fun_ds`](https://github.com/cambridge-FDS/fun_ds), to demonstrate how
 notebook code evolves into a reusable, tested package. All lectures import
-helpers such as {py:func}`fun_ds.data.load_california_housing` and
-{py:func}`fun_ds.plotting.set_lecture_style` so that setup boilerplate is
+helpers such as `fun_ds.data.load_california_housing()` and
+`fun_ds.plotting.set_lecture_style()` so that setup boilerplate is
 identical across notebooks.
 
 It is installed in editable mode by `pixi run install` (see

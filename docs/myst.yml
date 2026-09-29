@@ -15,6 +15,11 @@ project:
   github: https://github.com/cambridge-FDS/fun_ds
   settings:
     output_stderr: remove
+  # Tables of contents link to headings by their auto-generated ids; these
+  # resolve fine, so don't warn that explicit labels would be "best practice".
+  error_rules:
+    - rule: reference-target-explicit
+      severity: ignore
   numbering:
     headings: true
   bibliography:
