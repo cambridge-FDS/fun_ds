@@ -1,0 +1,791 @@
+# Lecture 1: The Data Science Workflow and Code Structure
+
+:::{admonition} Learning Objectives
+:class: tip
+After this lecture, you will be able to:
+
+- Describe the end-to-end data science workflow and its iterative nature
+- Explain why software engineering discipline is critical for reliable data science
+- Distinguish Breiman's _data modelling_ and _algorithmic modelling_ cultures
+- Transition from monolithic notebook code to modular Python packages
+- Make functions robust and readable with type hints, exceptions, portable
+  paths, central configuration and docstrings
+- Use Git and GitHub for collaborative, reproducible data science
+  :::
+
+This lecture sets the intellectual and technical foundation for the rest of
+the course. Before we touch a dataset, we introduce the **end-to-end data
+science workflow**, the **technology stack** used throughout the course, and
+the **software engineering principles** that separate research code from
+research infrastructure.
+
+The overarching philosophy: the goal is not merely to _build models_ but to
+build **reliable, readable, reproducible systems** in which models are one
+component. This mirrors the perspective in
+{cite:t}`huyen2022designing` and {cite:t}`sculley2015hidden`.
+
+---
+
+## Course Philosophy
+
+This course is highly applied and builds on concepts introduced elsewhere in
+the MPhil EDS programme (econometrics, statistics, research computing). Its
+distinctive contribution is **turning theoretical ideas into working,
+testable code** — the engineering skin around the statistical skeleton.
+
+By the end of the course you should be able to:
+
+- develop and maintain a **professional-grade data science code base**
+- collaborate on shared repositories through Git and pull requests
+- structure projects for **reproducibility** and **experimentation**
+- deploy a trained model to a REST API and monitor it in production
+- populate a **portfolio** suitable for interviews and internships
+
+:::{note}
+Applied does **not** mean superficial. You will implement concepts deeply,
+but always with practical purpose. Where a theoretical result matters, we
+cite the primary source. Formal proofs and asymptotic theory belong to D200
+(Machine Learning in Economics) and D300 (Causal Inference and Machine
+Learning) next term — this course builds the engineering intuition that makes
+that theory land.
+:::
+
+---
+
+## Two Cultures of Statistical Modelling
+
+Economics training equips you with sharp intuition about **when models
+should be trusted**. The tension between econometric and machine-learning
+worldviews was formalised by {cite:t}`breiman2001statistical` in his
+famous "Two Cultures" essay.
+
+### The data-modelling culture
+
+- assumes a **data-generating process** ($Y = f(X, \varepsilon)$)
+- estimates parameters that have **causal or structural** meaning
+- evaluates via goodness-of-fit and inference (t-tests, confidence intervals)
+- dominant in econometrics, biostatistics, and psychometrics
+
+### The algorithmic-modelling culture
+
+- treats $f$ as an **unknown black box** to be approximated
+- evaluates via **out-of-sample predictive accuracy**
+- makes weaker assumptions in exchange for weaker causal interpretation
+- dominant in machine learning
+
+Both cultures have their place. The prediction–causation distinction returns
+throughout the MPhil EDS programme — D300 will re-open this discussion in depth.
+
+### Prediction, inference, and causation
+
+For MPhil EDS students, the two-cultures framing has a sharper edge:
+economists must simultaneously care about **prediction** ("what will $Y$
+be?"), **inference** ("how confident are we in $\hat{\beta}$?"), and
+**causation** ("what happens to $Y$ if we intervene on $X$?"). These are
+distinct estimands with distinct requirements. {cite:t}`varian2014bigdata`
+argues that machine-learning tools — regularisation, cross-validation,
+ensembling — extend the econometrician's toolkit precisely because they
+handle high-dimensional prediction problems where classical inference is
+poorly conditioned. {cite:t}`mullainathan2017machine` sharpen the point by
+distinguishing $\hat{Y}$-problems (prediction, where ML shines) from
+$\hat{\beta}$-problems (causal inference, where identification strategies
+still dominate). {cite:t}`athey2019machine` survey the resulting synthesis:
+double/debiased machine learning, causal forests, and heterogeneous
+treatment-effect estimators use ML for nuisance-parameter estimation while
+preserving valid inference for the parameter of interest. Understanding
+which estimand your project targets is a prerequisite to choosing an
+appropriate method — a diagnostic that no cross-validation score can
+substitute for.
+
+:::{tip}
+**Economic intuition catches conceptual failures early.** If your training
+data is New York housing but you deploy the model in Albany, no
+cross-validation score will save you. Cross-validation already estimates
+_out-of-sample_ error, but only for new draws from the same distribution;
+Albany is _out of distribution_ (a covariate shift: different incomes, housing
+stock and prices). Many ML failures are conceptual, not algorithmic.
+:::
+
+---
+
+## What Data Scientists Actually Do
+
+Data-science work typically spans:
+
+- **Answering questions with data** — quick analyses that inform decisions
+- **Tracking and defining metrics** — what does "success" mean here?
+- **Automating business processes** — decisions that were previously manual
+- **Predicting outcomes** — supervised learning in production
+- **Running experiments** — A/B tests, causal identification of treatment effects
+
+This course focuses on **automation** and **prediction**, which most
+directly demand the engineering discipline we teach.
+
+---
+
+## The Data Science Workflow
+
+A typical project passes through these stages:
+
+```{mermaid}
+flowchart LR
+    A[Business question] --> B[Data acquisition]
+    B --> C[EDA]
+    C --> D[Cleaning & wrangling]
+    D --> E[Feature engineering]
+    E --> F[Model selection]
+    F --> G[Hyperparameter tuning]
+    G --> H[Evaluation]
+    H --> I[Deployment]
+    I --> J[Monitoring]
+    J -.-> C
+    H -.-> E
+    F -.-> D
+```
+
+The pipeline is **iterative**, not linear: evaluation results reshape
+feature engineering; monitoring reveals data drift and triggers a return to
+cleaning. Each lecture in this course zooms into one stage of the pipeline
+in depth.
+
+:::{note}
+Notice how many of these stages concern the **data** rather than the model.
+Feature engineering ([Lecture 5](lecture_5.ipynb)) is where much of the
+intellectual leverage lives {cite}`kuhn2019feature`.
+:::
+
+### The iterative nature of the workflow
+
+The linear presentation above is a pedagogical convenience, not a
+description of practice. Every mature process framework recognises that
+data projects loop. The **CRISP-DM** process model (Cross-Industry Standard
+Process for Data Mining) {cite}`chapman2000crisp` codifies six phases — business
+understanding, data understanding, data preparation, modelling, evaluation,
+deployment — connected by backward arrows: business and data understanding
+inform each other, data preparation and modelling alternate, and evaluation
+can send the project back to business understanding. An outer loop around the
+whole cycle returns from deployment to business understanding, because a
+deployed solution usually raises new business questions. Twenty-five years
+on, CRISP-DM is still a common reference point in industry, and its central insight — that data projects _never terminate cleanly_ — is now embedded in the
+MLOps literature. {cite:t}`huyen2022designing` argues that the design of an
+ML system is dominated by the feedback loops between its stages: the
+faster you can iterate from a monitoring signal back to a retrained model,
+the more value the system creates. Treat the workflow diagram above as a
+_state machine_ rather than a pipeline; the transitions you cannot short-circuit
+in production determine your architecture.
+
+### Reproducibility as an epistemological principle
+
+Reproducibility is not a hygiene requirement bolted onto research — it is
+constitutive of the knowledge claim. {cite:t}`wilson2017good` articulate a
+set of "good enough" practices (version control, plain-text data,
+scripted analyses, code review) that operationalise this principle for
+working scientists; each practice makes it possible for a stranger, or
+your future self, to arrive at the same conclusion from the same starting
+point. The deeper argument goes back to Peter Naur's 1985 essay
+[_Programming as Theory Building_](https://pages.cs.wisc.edu/~remzi/Naur.pdf).
+Naur argues that a working program is only the visible surface of a
+**theory** held in the minds of its authors — a mental model of the
+problem domain, the design decisions taken, and the ones deliberately
+rejected. When that theory is lost (the author leaves, the notes are
+mislaid, the notebook is not runnable), the program becomes uninhabitable
+even if it still executes: nobody can extend it without regressing to
+guesswork. For data science this is doubly true, because the artefact is
+not just code but the _joint state_ of code, data, and environment. A
+reproducible project preserves the theory, not merely the outputs. This is
+why we insist on version control, environment specification, and
+tests-as-documentation from the first commit: they are the medium in which
+scientific claims survive.
+
+---
+
+## Why Code Structure Matters as Much as Models
+
+A well-structured code base is easier to understand, debug, extend, and
+collaborate on. In practical terms this means the file layout **mirrors the
+pipeline**:
+
+```text
+project/
+├── data/               # raw and processed data (git-ignored if large)
+├── notebooks/          # exploration and communication
+├── src/mypkg/          # importable, testable Python package
+│   ├── data.py         # loading & wrangling
+│   ├── features.py     # feature engineering transformers
+│   ├── models.py       # estimators and training loops
+│   └── evaluation.py   # metrics and plots
+├── scripts/            # orchestration entry points
+├── tests/              # pytest test suite
+├── pyproject.toml      # dependencies and package metadata
+└── README.md
+```
+
+The `fun_ds` package accompanying this book follows the same idea, split by
+pipeline stage: `src/fun_ds/data.py` (loading), `transforms/` (feature
+engineering), `model/` (selection and diagnostics), `evaluation.py` and
+`metrics/`, with a matching `tests/` folder. Compare with the "good enough
+practices" of {cite:t}`wilson2017good` and the maxims of
+{cite:t}`kernighan1999practice`.
+
+---
+
+## Technology Stack
+
+| Tool                                                          | Role                                                                            |
+| ------------------------------------------------------------- | ------------------------------------------------------------------------------- |
+| [Python](https://docs.python.org/3/)                          | Primary programming language                                                    |
+| [Jupyter](https://jupyter.org/)                               | Exploratory analysis and communication                                          |
+| [VS Code](https://code.visualstudio.com/)                     | Development environment (see [setup guide](../setup/vscode.md))                 |
+| [Pixi](https://pixi.sh/) / conda                              | Reproducible environments (see [setup guide](../setup/environment_manager.md))  |
+| [Git](https://git-scm.com/) and [GitHub](https://github.com/) | Version control and collaboration (see [setup guide](../setup/git.md))          |
+| [pre-commit](https://pre-commit.com/)                         | Automated code quality checks (see [setup guide](../setup/pre-commit-hooks.md)) |
+
+Python is the dominant language for machine learning because of its
+ecosystem — NumPy {cite}`harris2020numpy`, pandas {cite}`mckinney2010pandas`,
+scikit-learn {cite}`pedregosa2011scikit`, matplotlib {cite}`hunter2007matplotlib`,
+and PyTorch — and its ability to bridge exploration and production.
+
+The live demos in the lecture use Cursor, a fork of VS Code with added AI
+features; its layout, extensions, and interpreter selection are identical, so
+everything in the VS Code setup guide applies to either editor.
+
+:::{note}
+The course focuses on **concepts**, not specific packages. Libraries change;
+principles persist.
+:::
+
+---
+
+## Jupyter Notebooks: Strengths and Limitations
+
+Notebooks excel at **exploration, visualisation, and explanation**. They are
+poor at building large, maintainable systems.
+
+### Common failure modes
+
+- **Hidden state** — cell order matters; the same notebook can produce
+  different results depending on the sequence of executions
+- **Very long files** with dozens of cells become unreviewable
+- **Poor testing integration** — you cannot run `pytest` on a notebook
+  cleanly
+- **Hard-coded parameters** scattered throughout the file
+- **Missing environment specification** — "it works on my machine"
+
+:::{warning}
+A notebook that only works after clicking cells in a specific order is
+**not reproducible**.
+:::
+
+The remedy is **modular code**: notebooks call functions from an installed
+package, rather than defining logic inline.
+
+---
+
+## From Notebook to Package
+
+The transition is progressive:
+
+```{mermaid}
+flowchart LR
+    N[Ad-hoc notebook] --> F[Extract functions]
+    F --> M[Group into modules]
+    M --> P[Package with pyproject.toml]
+    P --> S[Orchestration script + tests]
+```
+
+### Benefits of functions
+
+1. **Reusability** — call from any notebook or script
+2. **Modularity** — one clear responsibility per function
+3. **Readability** — named units are easier to reason about
+4. **Testability** — pure functions can be tested in isolation
+5. **Maintainability** — bug fixes propagate to every caller
+6. **Abstraction** — hide implementation details behind an interface
+7. **Collaboration** — clear seams reduce merge conflicts
+
+### Making it a real package
+
+Three ingredients:
+
+1. an `__init__.py` in your source directory
+2. a `pyproject.toml` at the project root
+3. an editable install so imports resolve to your working copy. With pixi,
+   as in this course, declare the package as an editable path dependency in
+   `pixi.toml`; `pixi install` then installs it into the environment:
+
+```toml
+[pypi-dependencies]
+mypkg = { path = ".", editable = true }
+```
+
+Without pixi, the equivalent is `pip install -e .` inside your virtual
+environment.
+
+Once installed, any notebook can import your code:
+
+```python
+from mypkg.data import load_dataset
+from mypkg.features import build_pipeline
+```
+
+:::{seealso}
+See the [`fun_ds` package on GitHub](https://github.com/cambridge-FDS/fun_ds/tree/main/src/fun_ds)
+for a minimal, working example. Notebooks in later lectures import from it directly.
+:::
+
+---
+
+## Orchestration Scripts
+
+An orchestration script (or _entry point_):
+
+- runs the pipeline in the correct order (data → features → train → evaluate)
+- separates **operational** logic (what runs on a schedule) from **exploratory**
+  logic (what happens once during EDA)
+- eliminates hidden notebook state
+
+A typical `pyproject.toml` exposes it as a CLI command. Note that an entry
+point must be importable, so the script lives _inside_ the package (here
+`src/mypkg/scripts/train.py`); a top-level `scripts/` folder, as in the
+layout above, is run directly with `python scripts/train.py` instead:
+
+```toml
+[project.scripts]
+train = "mypkg.scripts.train:main"
+```
+
+Then anyone can run:
+
+```bash
+train --config configs/experiment_a.yaml
+```
+
+This is the seed of the deployment pipeline you will build in
+[Lecture 9](lecture_9.ipynb).
+
+---
+
+## Writing Robust Code
+
+Modular code tells you _where_ logic lives; robust code makes sure that logic
+keeps working when someone else runs it, on another machine, with slightly
+different data. Five habits cover most of the ground:
+
+- functions have clearly defined input and output types;
+- the core functionality is tested;
+- edge cases and known issues are handled gracefully;
+- paths work across machines, users and working directories;
+- settings live in one central place.
+
+A sixth, easy one: do not ignore `FutureWarning`s and `DeprecationWarning`s.
+They are the library telling you which line of your code will break at the
+next upgrade.
+
+### Type hints
+
+A good function states what goes in and what comes out. Compare
+
+```python
+def multi_two_numbers(a, b):
+    return a * b
+```
+
+with
+
+```python
+def multi_two_numbers(a: int, b: int) -> int:
+    return a * b
+```
+
+The second version documents its contract in the signature itself, and your
+IDE can use it for autocompletion and warnings. Hints work with default
+arguments and with inputs that may take one of several types (`X | Y`, Python
+3.10+):
+
+```python
+def greet(name: str = "World") -> str:
+    return f"Hello, {name}!"
+
+
+def multi_two_numbers(a: int | float, b: int | float) -> int | float:
+    return a * b
+```
+
+Python does **not** enforce type hints at run time. With the `int` version
+above, this call runs without complaint:
+
+```python
+multi_two_numbers(2, "2.0")  # returns '2.02.0': an int times a str repeats the str
+```
+
+That silent success is worse than a crash. A static type checker such as
+[mypy](https://mypy.readthedocs.io/en/stable/cheat_sheet_py3.html) reads the
+hints without running the code and flags the mismatch. Given this `example.py`
+
+```python
+def multi_two_numbers(a: int, b: int) -> int:
+    return a * b
+
+
+num_1: int = 2
+result = multi_two_numbers(num_1, "2.0")
+```
+
+mypy reports
+
+```text
+$ mypy example.py
+example.py:6: error: Argument 2 to "multi_two_numbers" has incompatible type "str"; expected "int"  [arg-type]
+Found 1 error in 1 file (checked 1 source file)
+```
+
+You rarely call mypy by hand: the course's
+[pre-commit hooks](../setup/pre-commit-hooks.md) run it on every commit.
+
+### Tests
+
+Type checks catch the wrong _kind_ of input; tests check that the code does
+the right _thing_. Three kinds are worth knowing from the start:
+
+| Test type        | Purpose                                               | Example                                                               |
+| ---------------- | ----------------------------------------------------- | --------------------------------------------------------------------- |
+| Unit test        | Checks one function in isolation                      | A custom scaling function handles a `NaN` correctly                   |
+| Integration test | Checks that several components work together          | The pipeline reads from a database and writes to a storage location   |
+| Smoke test       | A fast, shallow check that nothing crashes end to end | The training script runs on a small sample and returns a results dict |
+
+A smoke test on a tiny slice of the data is the cheapest insurance you can
+buy while a project is small. We write proper tests with `pytest` in
+[Lecture 6](lecture_6.ipynb); Research Computing covers testing in more depth.
+
+### Handling edge cases with exceptions
+
+Some failures are expected and have a sensible fallback. Without handling,
+dividing by zero stops the whole pipeline:
+
+```python
+def divide(a: float, b: float) -> float:
+    return a / b  # divide(1, 0) raises ZeroDivisionError
+```
+
+A `try`/`except` block states what should happen instead. Resist the
+temptation to return a plausible-looking number such as `float("inf")`: that
+is wrong for `-1 / 0` (which would be $-\infty$) and meaningless for `0 / 0`,
+and the error then surfaces far downstream, if at all. Return an explicit
+"undefined" value and say so:
+
+```python
+import math
+import warnings
+
+
+def divide(a: float, b: float) -> float:
+    """Divide a by b; return NaN (with a warning) if b is zero."""
+    try:
+        return a / b
+    except ZeroDivisionError:
+        warnings.warn(f"divide({a}, {b}): division by zero, returning NaN", stacklevel=2)
+        return math.nan
+```
+
+`NaN` propagates through later arithmetic and is caught by the usual
+missing-value checks, and the warning tells you where it came from. If no
+caller can sensibly continue, do not catch the exception at all: letting
+`ZeroDivisionError` propagate is the most honest behaviour.
+
+Catch the _specific_ exception you expect (`ZeroDivisionError`, `KeyError`,
+`FileNotFoundError`, ...), never a bare `except:`, which would also swallow
+genuine bugs. The decision rule: handle with an exception what you know can
+happen and know how to recover from; everything else should fail loudly and
+be caught by a test.
+
+### Paths that work anywhere
+
+Paths are the most common reason a colleague's code fails on your laptop.
+All three of these are fragile:
+
+```python
+import pandas as pd
+
+df = pd.read_csv("/Users/niklas/data/myfile.csv")  # only works for Niklas
+df = pd.read_csv("data/myfile.csv")  # only works from the repo root
+df = pd.read_csv("S:\\Main Folder\\data\\myfile.csv")  # only works on Windows
+```
+
+The standard-library `pathlib` builds an absolute path relative to the file
+that contains the code, independent of user, working directory and operating
+system:
+
+```python
+from pathlib import Path
+
+import pandas as pd
+
+# In src/mypkg/data_load.py: go up to the repo root, then into data/
+DATA_PATH = Path(__file__).parent.parent.parent / "data" / "myfile.csv"
+df = pd.read_csv(DATA_PATH)
+```
+
+[Lecture 4](lecture_4.ipynb) covers `pathlib` in detail.
+
+### Settings in one place
+
+Hard-coded parameters scattered across a notebook (a random seed here, a
+test-set share there) are easy to change in one place and forget in another.
+Collect them in a single configuration file:
+
+```yaml
+# configs/experiment_a.yaml
+data:
+  path: data/housing.parquet
+model:
+  test_size: 0.2
+  random_state: 42
+```
+
+and read it once, at the start of the orchestration script. As with data
+files, build the path from the file's own location, not from the working
+directory:
+
+```python
+from pathlib import Path
+
+import yaml  # the PyYAML package
+
+# In src/mypkg/scripts/train.py: go up to the repo root, then into configs/
+PROJECT_ROOT = Path(__file__).resolve().parents[3]
+config = yaml.safe_load((PROJECT_ROOT / "configs" / "experiment_a.yaml").read_text())
+test_size = config["model"]["test_size"]  # 0.2
+```
+
+`yaml` is not in the standard library: declare `pyyaml` as a dependency of your
+project (in `pyproject.toml`, or with `pixi add pyyaml`) so the script does not
+only work on machines where someone happened to install it.
+
+A plain dictionary is enough to start with. For larger projects, Pydantic
+models validate the config (types, ranges, required keys) as it is loaded;
+we use Pydantic for input validation in [Lecture 9](lecture_9.ipynb).
+
+---
+
+## Documenting Your Code
+
+Code is written once and read many times: by your future self a year from
+now, by a colleague, by whoever inherits the project when you leave, or by
+you reviewing a first draft written by a coding agent. Three layers of
+documentation serve these readers.
+
+The **README** is the front door of the repository. It typically covers what
+the project does, how to install it, how to run the key scripts, a short
+example, the repository structure, and authorship and licence. It is written
+in [Markdown](https://www.markdownguide.org/getting-started/).
+
+**Docstrings** are triple-quoted strings at the start of a module or function.
+A module docstring explains what the file is for and how it fits into the
+code base; a function docstring explains its purpose, inputs and outputs:
+
+```python
+def multi_two_numbers(a: int, b: int) -> int:
+    """Multiply numbers a and b.
+
+    Args:
+        a: The first factor (multiplier).
+        b: The second factor (multiplicand).
+
+    Returns:
+        The product of a and b.
+    """
+    return a * b
+```
+
+Together with type hints, a docstring means nobody has to read the function
+body to use it correctly. `help(multi_two_numbers)` and your IDE's hover text
+both display it.
+
+**Comments** explain _why_ a line is written the way it is, not _what_ it
+does. Keep them short, accurate and in English, and prefer a clear variable
+or function name to a comment that explains an unclear one. Larger projects
+add a `CONTRIBUTING.md`, a `CHANGELOG.md`, or background notes on data
+sources and models.
+
+---
+
+## Clean Code and Trust
+
+Good data science requires **trust in your code**:
+
+- experiments must be **meaningful** — a bug can silently invalidate weeks of work
+- refactoring must be **safe** — tests give you confidence to change
+- collaborators must be able to read and extend your work
+
+:::{note}
+Experimentation is science — and science requires _reliability_. Half the
+value of a test suite is that it lets you make bold changes without fear.
+:::
+
+---
+
+## Collaboration with Git and GitHub
+
+Data science is almost never done alone. Git provides local version control;
+GitHub adds remote hosting, pull requests, and code review.
+
+### The minimal workflow
+
+```{mermaid}
+flowchart LR
+    C[Clone repo] --> B[Create branch]
+    B --> W[Work & commit]
+    W --> P[Push branch]
+    P --> R[Open PR]
+    R --> V[Code review]
+    V --> M[Merge to main]
+```
+
+1. **Clone** or **fork** a repository
+2. **Create a branch** for each unit of work (`git checkout -b feature/xyz`)
+3. **Commit frequently** with descriptive messages
+4. **Push** the branch and **open a pull request**
+5. Iterate on **code review**, then merge
+
+:::{tip}
+Version control is "undo" with memory. The real value is not what it
+prevents — it is the _confidence to experiment_ it enables.
+:::
+
+For an in-depth walkthrough, see
+[Lecture 2](lecture_2.ipynb#version-control-with-git) and the
+[Git setup guide](../setup/git.md).
+
+### Code review as a social process
+
+The pull request is a technical artefact, but the practice around it is a
+**social** one. {cite:t}`kernighan1999practice` observe that programming is
+fundamentally a communication act — first with the machine, and then, more
+importantly, with the humans who will read the code afterwards. Code
+review is where that second audience actually shows up. A good review
+serves three overlapping purposes: it _catches bugs_ the author cannot see
+because they wrote the code; it _transfers knowledge_ about the codebase
+across the team, spreading the "theory of the program" more widely; and
+it _establishes norms_ — how we name things, how we handle errors, what
+counts as done. In a research group the payoff is compounded: reviewers
+often catch statistical or scientific errors that would never be flagged
+by automated tests. Ask for reviews early, keep pull requests small (a few
+hundred lines is easier to reason about than a few thousand), and treat
+review comments as questions about a shared object rather than judgements
+of the author.
+
+---
+
+## FAIR Data Principles
+
+The FAIR principles {cite}`wilkinson2016fair` — **Findable, Accessible,
+Interoperable, Reusable** — provide a widely adopted rubric for the
+stewardship of scientific data. Originally articulated for the life
+sciences, they have been adopted by funding agencies, journals, and
+research infrastructures across disciplines, including in economics and
+the social sciences. For an MPhil project, the principles translate into
+concrete decisions about how you name files, document schemas, and share
+outputs:
+
+- **Findable** — datasets carry globally unique, persistent identifiers
+  (e.g. a DOI), and are indexed in a searchable resource with rich
+  metadata.
+- **Accessible** — the data (or an authenticated route to it) can be
+  retrieved using a standardised, open protocol; metadata remain
+  accessible even when the underlying data are restricted.
+- **Interoperable** — data and metadata use formal, shared vocabularies
+  and open formats (CSV, Parquet, JSON-LD) so that different tools can
+  consume them without bespoke adapters.
+- **Reusable** — data are richly described with provenance and released
+  under a clear licence, so that others can legitimately build on the
+  work.
+
+FAIR is complementary to reproducibility: reproducibility asks whether
+_your_ analysis can be re-executed; FAIR asks whether _others_ can build
+on the resources your project produced. Applying both raises the marginal
+value of every dataset your project curates.
+
+---
+
+## Exercises
+
+_Optional._ Each exercise trains one skill you will need whenever you take a real dataset from raw data to a model you can defend. They take 30–60 minutes each and end with **Done when** criteria you can check yourself; hints are collapsed so you can try first. The tutorials remain the core practice.
+
+:::{admonition} Exercise 1.1 — Package a notebook
+:class: exercise
+**Skill.** Turning notebook code into an importable, documented, tested package — the structure every later lecture assumes.
+
+Take any notebook you have written before (or a public one from [Kaggle](https://www.kaggle.com/)).
+
+1. Move every function into `src/mypkg/utils.py` and give each a type-hinted signature and a docstring.
+2. Add a `pyproject.toml` at the repository root (use the `fun_ds` one as a template) and install it in editable mode: add `mypkg = { path = ".", editable = true }` under `[pypi-dependencies]` in `pixi.toml` and run `pixi install` (or `pip install -e .` without pixi).
+3. Replace the definitions in the notebook with `from mypkg.utils import ...`.
+4. Write one test in `tests/test_utils.py` that calls one of your functions on a tiny hand-made input and checks the result.
+
+**Done when.**
+
+- `from mypkg.utils import <your function>` works in a fresh kernel, started from any directory, without touching `sys.path`.
+- `pytest` passes from the repository root.
+- The notebook contains no function definitions, only narrative, calls and outputs.
+  :::
+
+:::{dropdown} Hint
+If the import only works from one directory, you are relying on the working directory rather than the installed package. Run `python -c "import mypkg; print(mypkg.__file__)"` from elsewhere: it should point into your `src/` folder. Testing is covered properly in [Lecture 6](lecture_6.ipynb); for now a plain `assert` inside a function whose name starts with `test_` is enough.
+:::
+
+:::{admonition} Exercise 1.2 — The clean-clone test
+:class: exercise
+**Skill.** Making code run _out of the box_ for someone who is not you. "It works on my machine" usually means some state exists only on your machine.
+
+Use the repository from Exercise 1.1, or any small repository of your own.
+
+1. Push it to GitHub, then clone it into a new temporary directory.
+2. Using **only** the tracked files and the instructions in `README.md`, create the environment, install the package and run the code end to end.
+3. Each time you have to do something the README does not tell you (install a package, copy a data file, edit a path, run cells out of order), write it down.
+4. Fix the repository so that each item disappears, commit, delete the clone and repeat.
+
+**Done when.**
+
+- A fresh clone runs end to end by following the README alone, and your list is empty.
+  :::
+
+:::{dropdown} Hint
+The usual culprits are absolute paths (`/Users/you/...`), data files that exist locally but are git-ignored or were never committed, packages installed ad hoc but missing from the environment file, and notebooks that only work when run out of order. [Writing Robust Code](#writing-robust-code) covers portable paths.
+:::
+
+---
+
+## Key Takeaways
+
+:::{admonition} Key Takeaways
+:class: important
+
+- Data science is an **engineering discipline** as much as a statistical one.
+- The **two cultures** {cite}`breiman2001statistical` frame the tension
+  between causal econometrics and predictive ML; both matter.
+- **Structure matters as much as models**: mirror the pipeline in the codebase.
+- Notebooks are a **tool**, not a foundation — extract logic into a package.
+- **Robust code** states its types, handles expected failures, uses portable
+  paths and keeps settings and documentation in one place.
+- **Git and pull requests** are the operating system of collaboration.
+- Strong SWE skills amplify data-science impact and make experiments trustworthy.
+  :::
+
+---
+
+## Further Reading
+
+- {cite:t}`breiman2001statistical` — The Two Cultures essay.
+- {cite:t}`hastie2009elements` — canonical statistical learning textbook.
+- {cite:t}`james2021introduction` — accessible companion to Hastie et al.
+- {cite:t}`huyen2022designing` — end-to-end ML system design.
+- {cite:t}`wilson2017good` — Good Enough Practices in Scientific Computing.
+- Peter Naur, _[Programming as Theory Building](https://pages.cs.wisc.edu/~remzi/Naur.pdf)_ (1985).
+
+## Looking Ahead
+
+Each remaining lecture zooms into one stage of the pipeline. Over time, we
+will build toward a full repository that mirrors a professional data-science
+system — from data ingestion ([Lecture 2](lecture_2.ipynb)) to deployment
+([Lecture 9](lecture_9.ipynb)). You are not expected to master everything
+immediately; the goal is **progressive refinement**.

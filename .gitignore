@@ -66,9 +66,15 @@ instance/
 # Scrapy stuff:
 .scrapy
 
-# Sphinx documentation
+# Sphinx / Jupyter Book
 docs/_build/
 docs/api/
+
+# pixi
+.pixi/
+
+# macOS
+.DS_Store
 
 # PyBuilder
 target/
@@ -121,3 +127,9 @@ mlruns
 
 # direnv
 .envrc
+
+# Local read-only mirror of the Overleaf lecture slides (pixi run slides-sync)
+slides/
+
+# Scratch output written by the Lecture 9 notebook (MLflow store, ONNX files, pickles)
+docs/lectures/_artifacts/

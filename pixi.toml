@@ -1,0 +1,107 @@
+[workspace]
+name = "fun_ds"
+version = "0.1.0"
+description = "Fundamentals of Data Science – MPhil EDS, Cambridge"
+channels = ["conda-forge"]
+# linux-aarch64: Docker on Apple Silicon builds linux/arm64 images (Lecture 9)
+platforms = ["osx-arm64", "osx-64", "linux-64", "linux-aarch64", "win-64"]
+
+[dependencies]
+python = ">=3.11"
+numpy = ">=1.24"
+pandas = ">=2.0"
+scikit-learn = ">=1.3"
+matplotlib = ">=3.7"
+seaborn = "*"
+scipy = "*"
+duckdb = "*"
+pyarrow = ">=15"  # Parquet I/O in pandas (Lectures 2–3)
+sqlalchemy = "*"
+ipykernel = "*"
+ipywidgets = "*"
+
+[feature.docs.dependencies]
+# Book build toolchain
+jupyter-book = ">=2.0"
+sphinxcontrib-bibtex = "*"
+numpydoc = "*"
+sphinx-book-theme = "*"
+# Visualisation (Lecture 4)
+plotly = "*"
+altair = "*"
+# Data engineering (Lectures 2–3)
+polars = "*"
+# Modelling (Lecture 7)
+lightgbm = "*"
+xgboost = ">=2.0"
+# Tabular foundation model demo (Lecture 7). `tabicl-base` is TabICL without its
+# optional extras (wandb, transformers, shapiq); CPU-only PyTorch avoids CUDA.
+pytorch-cpu = "*"
+tabicl-base = ">=2.2"
+# Interpretability (Lecture 8)
+shap = "*"
+interpret = "*"
+dalex = "*"
+setuptools = "<81"  # dalex still imports pkg_resources (removed in setuptools 81)
+# MLOps and deployment (Lecture 9)
+mlflow = ">=3.14"  # skops serialisation (Lecture 9)
+onnx = "*"
+onnxruntime = "*"
+skl2onnx = "*"
+pydantic = "*"
+fastapi = "*"
+httpx = "*"
+pandera = ">=0.24"  # data validation in CI; `pandera.pandas` needs 0.24 (Lecture 9)
+
+[pypi-dependencies]
+# The course package, installed editable into every environment except `serve`
+fun_ds = { path = ".", editable = true }
+
+[feature.serve.dependencies]
+# Slim serving environment for the Lecture 9 Docker image: the ONNX model behind
+# FastAPI. It skips the default dependencies (pandas, matplotlib, duckdb, ...).
+python = ">=3.11"
+numpy = ">=1.24"
+fastapi = "*"
+uvicorn = "*"
+pydantic = "*"
+onnxruntime = "*"
+
+[feature.app.dependencies]
+# Interactive feature-engineering playground (Lecture 5, apps/fe_playground)
+streamlit = ">=1.50"
+starlette = ">=0.47"  # streamlit >=1.5x imports starlette APIs its conda metadata does not pin
+
+[feature.test.dependencies]
+pytest = ">=7"
+pytest-cov = "*"
+
+[feature.lint.dependencies]
+pre-commit = "*"
+ruff = "==0.15.18"  # keep in step with the ruff-pre-commit rev in .pre-commit-config.yaml
+
+[feature.dev.dependencies]
+hatchling = "*"
+hatch-vcs = "*"
+pip = "*"
+
+[environments]
+default = { features = ["docs", "test", "lint", "dev", "app"], solve-group = "default" }
+docs = { features = ["docs", "dev"], solve-group = "default" }
+test = { features = ["test", "dev"], solve-group = "default" }
+lint = { features = ["lint"], solve-group = "default" }
+app = { features = ["app", "dev"], solve-group = "default" }
+serve = { features = ["serve"], no-default-feature = true, solve-group = "default" }
+
+[tasks]
+docs-execute = { cmd = "jupyter nbconvert --to notebook --execute --inplace --ExecutePreprocessor.timeout=300 --ExecutePreprocessor.kernel_name=python3 lectures/*.ipynb", cwd = "docs" }
+docs-build = { cmd = "jupyter-book build --html", cwd = "docs", depends-on = ["docs-execute"] }
+docs-start = { cmd = "jupyter-book start", cwd = "docs" }
+docs-clean = "rm -rf docs/_build"
+fe-app = { cmd = "streamlit run apps/fe_playground/app.py" }
+test = "pytest"
+lint = "pre-commit run --all-files"
+format = "ruff format src/ tests/"
+check = "ruff check src/ tests/"
+# Read-only local mirror of the Overleaf lecture slides (needs an Overleaf Git token)
+slides-sync = "bash -c 'if [ -d slides/.git ]; then git -C slides pull --ff-only; else git clone https://git.overleaf.com/66a959ab6c58291a0258122d slides && git -C slides remote set-url --push origin no_push; fi'"
