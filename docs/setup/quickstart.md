@@ -169,7 +169,6 @@ Still inside the `fun_ds` folder:
 
 ```bash
 pixi install          # downloads Python + all packages into .pixi/  (0.5–1 GB download, up to 3 GB on disk, 5–15 min)
-pixi run install      # installs the course's own fun_ds package in editable mode
 ```
 
 What just happened:
@@ -177,8 +176,9 @@ What just happened:
 - `pixi install` read `pixi.toml` (the list of packages we asked for) and
   `pixi.lock` (the exact versions that were tested) and built an environment in
   `fun_ds/.pixi/envs/default/`. Everyone in the class gets the same versions.
-- `pixi run install` makes `import fun_ds` work. The lecture notebooks use this
-  small package for shared helpers such as `load_california_housing()`.
+- The same command also installed the course's own `fun_ds` package in
+  _editable_ mode, which makes `import fun_ds` work. The lecture notebooks use
+  this small package for shared helpers such as `load_california_housing()`.
   "Editable" means that if you change code in `src/fun_ds/`, the notebooks see
   the change immediately, without reinstalling.
 
@@ -338,8 +338,8 @@ networks. Try, in this order:
 
 ### `ModuleNotFoundError: No module named 'fun_ds'`
 
-You skipped `pixi run install` (Step 5), or the notebook is using the wrong
-kernel (next item).
+Either `pixi install` (Step 5) did not finish, so re-run it from inside the
+`fun_ds` folder, or the notebook is using the wrong kernel (next item).
 
 ### Imports fail in the notebook but work with `pixi run python`
 

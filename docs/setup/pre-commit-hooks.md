@@ -7,7 +7,7 @@
 This guide explains how to set up **pre-commit hooks** for data science projects and why they are an important part of a professional workflow.
 
 :::{important}
-**The course repository already ships a `.pre-commit-config.yaml`, and `pre-commit` is already in the pixi environment.** You don't need to write or install anything. Run `pixi run pre-commit install` once inside the repository and you are done. The configuration below is the one the course uses; it is documented here so you understand _what_ is running and _why_, and so you can reuse it in your own projects.
+**The course repository already ships a `.pre-commit-config.yaml`, and `pre-commit` is already in the pixi environment.** You don't need to write or install anything. Run `pixi run pre-commit install` once inside the repository and you are done. The configuration shown below is exactly the one in the course repository; it is documented here so you understand _what_ is running and _why_, and so you can reuse it in your own projects.
 :::
 
 We focus on a **popular, battle-tested default configuration** that works well for:
@@ -107,13 +107,13 @@ seconds.
 
 ## The Course Configuration
 
-This is the course repository's `.pre-commit-config.yaml`:
+This is the course repository's `.pre-commit-config.yaml`, verbatim apart from the comments:
 
 ```yaml
 repos:
   # Python linting and formatting (fast, modern)
   - repo: https://github.com/astral-sh/ruff-pre-commit
-    rev: v0.8.6
+    rev: v0.15.18 # same version as `ruff` in pixi.toml
     hooks:
       - id: ruff
         args: [--fix]
@@ -146,17 +146,22 @@ repos:
 ```
 
 Ruff's settings (which rules, line length) live in `pyproject.toml` under
-`[tool.ruff]`, so the editor extension, `pixi run check` and the hook all
-agree.
+`[tool.ruff]`, and the ruff **version** is pinned twice to the same release:
+`ruff = "==0.15.18"` in `pixi.toml` (used by `pixi run check`, `pixi run format`
+and the VS Code Ruff extension, which uses the selected interpreter's ruff
+by default, so select the pixi environment) and
+`rev: v0.15.18` in the hook config. Same settings plus same version means the
+editor, the hooks and CI flag and format code identically. If you bump one,
+bump the other.
 
 :::{note}
-The version numbers above (e.g. `rev: v0.8.6`) are illustrative and **will drift** as upstream projects release. Do not copy them blindly — instead, run:
+The version numbers above **will drift** as upstream projects release. When you reuse this file in your own projects, don't copy the `rev:` values blindly. Instead, run:
 
 ```bash
 pre-commit autoupdate
 ```
 
-This walks your `.pre-commit-config.yaml` and rewrites every `rev:` field to the latest stable release. Re-run it every few months, commit the change, and CI will pick it up automatically.
+This walks your `.pre-commit-config.yaml` and rewrites every `rev:` field to the latest stable release. Re-run it every few months, commit the change, and CI will pick it up automatically. If your `pixi.toml` pins ruff as well, update that pin to match.
 
 The course repository's `.pre-commit-config.yaml` is the canonical reference — reuse it rather than authoring a new one from scratch.
 :::
@@ -184,34 +189,30 @@ Trailing whitespace causes meaningless Git diffs and makes reviews harder.
 Why it matters:
 Many tools expect this. Missing newlines can break POSIX tooling.
 
-#### `check-yaml` / `check-json`
+#### `check-yaml`
 
-- Verifies that YAML/JSON files are valid
+- Verifies that YAML files (such as the GitHub Actions workflows and this very
+  config) are valid
 
 Why it matters:
 Configuration files fail silently when malformed.
 
-#### `check-merge-conflict`
-
-- Fails if Git conflict markers are present:
-
-```text
-<<<<<<< HEAD
-=======
->>>>>>>
-```
-
-Why it matters:
-This prevents committing broken files by accident.
-
 #### `check-added-large-files`
 
-- Blocks committing large files (default 500 kB; the course sets it explicitly
-  with `--maxkb=500`)
+- Blocks committing files larger than 500 kB (`--maxkb=500`, which is also the
+  hook's default)
 
 Why it matters:
 Large datasets and binaries **do not belong in Git**.
 They should be stored externally or via data versioning tools.
+
+:::{tip}
+`pre-commit-hooks` offers many more checks that the course repository does not
+use but that you may want in your own: for example `check-json` (valid JSON),
+`check-toml` (valid TOML) and `check-merge-conflict`, which fails if leftover
+Git conflict markers (`<<<<<<< HEAD`, `=======`, `>>>>>>>`) are still in a
+file. Add them as extra `- id:` lines under the `pre-commit-hooks` repo.
+:::
 
 ---
 
@@ -376,7 +377,7 @@ This matters because:
 - Fresh clones, forks, and reviewers all get the same guarantee: **everything on `main` passed the checks.**
 - It removes the "did you run the formatter?" step from every code review.
 
-Below is a minimal GitHub Actions workflow that runs pre-commit on every push and pull request. Save it as `.github/workflows/pre-commit.yml`:
+Below is a **sample** minimal GitHub Actions workflow for your own repositories (it is not the course's workflow; see below). It runs pre-commit on every push and pull request. Save it as `.github/workflows/pre-commit.yml`:
 
 ```yaml
 name: pre-commit
@@ -400,7 +401,7 @@ jobs:
 This is the same command (`pre-commit run --all-files`) that you run locally, executed on GitHub's runners. If your local commit passes, the CI check will pass.
 
 :::{seealso}
-The course repository already wires this up. See [`.github/workflows/ci.yml`](https://github.com/cambridge-FDS/fun_ds/blob/main/.github/workflows/ci.yml) for the concrete workflow used in class: it installs the pixi environment with `prefix-dev/setup-pixi` and runs `pixi run lint`, `pixi run test` and a full book build on every pull request. Read it; it is short and shows the pattern above with a real environment.
+The course repository already wires this up. See [`.github/workflows/ci.yml`](https://github.com/cambridge-FDS/fun_ds/blob/main/.github/workflows/ci.yml) for the concrete workflow used in class: it installs the pixi environment with `prefix-dev/setup-pixi@v0.10.2` and runs `pixi run lint`, `pixi run test` and a full book build on every pull request. Read it; it is short and shows the pattern above with a real environment.
 :::
 
 ---

@@ -4,11 +4,14 @@ Welcome to the online resource for **Fundamentals of Data Science**, the D100
 module of the [MPhil in Economics and Data Science](https://www.econ.cam.ac.uk/apply/postgraduate/courses/mphil-data)
 at the University of Cambridge.
 
-The course equips students with the concepts, techniques, and engineering
-skills required to run a data-science project from end to end. The emphasis
-is applied — every lecture ties a statistical or computational idea to a
-piece of working, testable code — while remaining academically rigorous
-about the underlying theory {cite}`hastie2009elements,james2021introduction`.
+The course introduces students to the fundamental concepts, techniques, and tools in data science. With a focus on end-to-end data science projects, the course is designed to equip students with the skills necessary for successful interviews and careers in the field. Students will learn to tackle real-world data problems, covering the entire spectrum from data acquisition and preprocessing to analysis, visualisation, statistical modelling, and considerations for moving models into production. As part of this course, students will also be equipped with valuable software engineering skills.
+
+:::{note} About this book
+This book grew out of the D100 lectures given in Michaelmas 2024 and 2025 and was set up
+with the help of AI tools. It is meant to **complement the lectures, not
+replace them**: the lectures, slides and problem sets remain the primary
+course material (for now). If you spot an error, please let us know.
+:::
 
 ---
 
@@ -41,8 +44,7 @@ lands when you encounter it next term.
 ```bash
 git clone https://github.com/cambridge-FDS/fun_ds.git
 cd fun_ds
-pixi install
-pixi run install
+pixi install   # environment + the fun_ds package (editable)
 ```
 
 Open the `fun_ds` folder in VS Code, open any notebook under `docs/lectures/`
@@ -55,13 +57,12 @@ you from an empty laptop to a running notebook, with a check after every step.
 
 ## Course Structure
 
-The book is organised into three parts, each accessible from the sidebar:
+The book is organised into two parts, each accessible from the sidebar:
 
-| Part                                                | Content                                                   |
-| --------------------------------------------------- | --------------------------------------------------------- |
-| **[Getting Started](setup/quickstart.md)**          | Day 1 setup, environments, VS Code, Git, pre-commit hooks |
-| **[Lectures 1–9](lectures/lecture_1.md)**           | The end-to-end data science lifecycle                     |
-| **[Software Engineering](swe/memory_profiling.md)** | Practical SWE tooling for data scientists                 |
+| Part                                       | Content                                                   |
+| ------------------------------------------ | --------------------------------------------------------- |
+| **[Getting Started](setup/quickstart.md)** | Day 1 setup, environments, VS Code, Git, pre-commit hooks |
+| **[Lectures 1–9](lectures/lecture_1.md)**  | The end-to-end data science lifecycle                     |
 
 ---
 
@@ -78,7 +79,7 @@ housing-price regression model from data acquisition (L2) to deployment (L9).
 | [4](lectures/lecture_4.ipynb) | Data Visualisation            | Grammar of graphics, EDA              | `matplotlib`, `seaborn`, `plotly`         |
 | [5](lectures/lecture_5.ipynb) | Feature Engineering           | Pipelines, leakage, transformers      | `scikit-learn`, `ColumnTransformer`       |
 | [6](lectures/lecture_6.ipynb) | Statistical Modelling I       | GLMs, cross-validation, CV strategies | `scikit-learn`                            |
-| [7](lectures/lecture_7.ipynb) | Statistical Modelling II      | Regularisation, tuning, tabular FMs   | `scikit-learn`, `lightgbm`, `tabpfn`      |
+| [7](lectures/lecture_7.ipynb) | Statistical Modelling II      | Regularisation, tuning, tabular FMs   | `scikit-learn`, `lightgbm`, `tabicl`      |
 | [8](lectures/lecture_8.ipynb) | Evaluation & Interpretability | PDP, ALE, SHAP, EBM                   | `sklearn.inspection`, `shap`, `interpret` |
 | [9](lectures/lecture_9.ipynb) | Deployment & Monitoring       | MLflow, ONNX, FastAPI, drift, CI/CD   | `mlflow`, `onnx`, `fastapi`               |
 
@@ -93,7 +94,7 @@ helpers such as `fun_ds.data.load_california_housing()` and
 `fun_ds.plotting.set_lecture_style()` so that setup boilerplate is
 identical across notebooks.
 
-It is installed in editable mode by `pixi run install` (see
+It is installed in editable mode by `pixi install` (see
 [Day 1 Setup, Step 5](setup/quickstart.md#step-5-install-the-course-environment)),
 so any change you make under `src/fun_ds/` is picked up by the notebooks
 immediately.
@@ -111,6 +112,6 @@ work in practice. D200 and D300 supply the theoretical deepening.
 
 ## License
 
-This material is licensed under
+The book content is licensed under
 [CC-BY-4.0](https://creativecommons.org/licenses/by/4.0/). The `fun_ds`
 Python package is released under the MIT license.

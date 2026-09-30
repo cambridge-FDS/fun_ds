@@ -19,5 +19,5 @@ def test_load_california_housing_no_target():
 
 def test_load_california_housing_with_ratios():
     df = load_california_housing(add_ratios=True)
-    assert "rooms_per_household" in df.columns
+    assert "rooms_per_person" in df.columns
     assert "bedrooms_per_room" in df.columns

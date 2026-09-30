@@ -61,24 +61,28 @@ class OLSDiagnostics:
         Q, _ = np.linalg.qr(X_aug)
         self.leverage_ = np.sum(Q**2, axis=1)  # h_ii
 
+        # Number of fitted parameters, intercept included
+        k = p + 1
+
         # Residual standard error (unbiased)
-        dof = n - p - 1
+        dof = n - k
         sigma2 = np.sum(residuals**2) / max(dof, 1)
 
         # Standardised (internally studentised) residuals
         denom = np.sqrt(sigma2 * np.maximum(1.0 - self.leverage_, 1e-12))
         self.standardised_residuals_ = residuals / denom
 
-        # Cook's distance: D_i = (e_i^2 / (p * sigma^2)) * (h_ii / (1 - h_ii)^2)
+        # Cook's distance: D_i = (e_i^2 / (k * sigma^2)) * (h_ii / (1 - h_ii)^2)
         self.cooks_distance_ = (
             residuals**2
-            / (max(p, 1) * sigma2)
+            / (k * sigma2)
             * (self.leverage_ / np.maximum((1.0 - self.leverage_) ** 2, 1e-12))
         )
 
         self._residuals = residuals
         self._y_pred = y_pred
         self._n = n
+        self._k = k
 
     def summary(self, index: pd.Index | None = None) -> pd.DataFrame:
         """Return diagnostics as a DataFrame.
@@ -180,9 +184,8 @@ class OLSDiagnostics:
 
         # Cook's distance contours at D=0.5 and D=1
         x_range = np.linspace(lev.min(), lev.max(), 200)
-        p = self.estimator.coef_.shape[0] if hasattr(self.estimator, "coef_") else 1
         for d in [0.5, 1.0]:
-            contour = np.sqrt(d * p * (1 - x_range) / x_range)
+            contour = np.sqrt(d * self._k * (1 - x_range) / x_range)
             ax.plot(x_range, contour, "r--", linewidth=0.8, label=f"Cook's D={d}")
             ax.plot(x_range, -contour, "r--", linewidth=0.8)
         ax.legend(fontsize=8)

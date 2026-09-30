@@ -11,17 +11,29 @@ from sklearn.utils.validation import check_is_fitted
 
 
 class CyclicalEncoder(TransformerMixin, BaseEstimator):
-    """Encode a cyclic feature as a (sin, cos) pair.
+    """Encode cyclic features as (sin, cos) pairs.
 
     Cyclic features — hour of day, day of week, month of year — wrap
     around: hour 23 is adjacent to hour 0. A raw integer encoding breaks
     this topology. The (sin, cos) transformation maps each value to a
     point on the unit circle, preserving cyclical proximity.
 
+    Each input column is encoded separately, so an input of shape
+    (n_samples, n_features) gives an output of shape (n_samples, 2 * n_features),
+    ordered ``[col0_sin, col0_cos, col1_sin, col1_cos, ...]``. All columns
+    share the same ``period``.
+
     Parameters
     ----------
     period : float
         Full period of the cycle. E.g. 24 for hours, 7 for days, 12 for months.
+
+    Attributes
+    ----------
+    n_features_in_ : int
+        Number of input columns seen during ``fit``.
+    feature_names_in_ : np.ndarray of str
+        Input column names; only set when ``fit`` receives a DataFrame.
 
     Examples
     --------
@@ -32,22 +44,52 @@ class CyclicalEncoder(TransformerMixin, BaseEstimator):
     def __init__(self, period: float = 24.0) -> None:
         self.period = period
 
+    @staticmethod
+    def _as_2d(X: ArrayLike) -> np.ndarray:
+        x = np.asarray(X, dtype=np.float64)
+        if x.ndim == 1:
+            x = x.reshape(-1, 1)
+        if x.ndim != 2:
+            raise ValueError(f"Expected 1-D or 2-D input, got {x.ndim}-D.")
+        return x
+
     def fit(self, X: ArrayLike, y: ArrayLike | None = None) -> CyclicalEncoder:
-        """No-op."""
+        """Record the number (and names) of input columns."""
+        self.n_features_in_ = self._as_2d(X).shape[1]
+        if isinstance(X, pd.DataFrame):
+            self.feature_names_in_ = np.asarray(X.columns, dtype=object)
         return self
 
     def transform(self, X: ArrayLike) -> np.ndarray:
-        """Return stacked (sin, cos) columns. Shape: (n_samples, 2)."""
-        x = np.asarray(X, dtype=np.float64).ravel()
+        """Return interleaved (sin, cos) columns. Shape: (n_samples, 2 * n_features)."""
+        check_is_fitted(self, "n_features_in_")
+        x = self._as_2d(X)
+        if x.shape[1] != self.n_features_in_:
+            raise ValueError(
+                f"X has {x.shape[1]} columns, but CyclicalEncoder was fitted "
+                f"with {self.n_features_in_}."
+            )
         theta = 2.0 * np.pi * x / self.period
-        return np.column_stack([np.sin(theta), np.cos(theta)])
+        out = np.empty((x.shape[0], 2 * x.shape[1]))
+        out[:, 0::2] = np.sin(theta)
+        out[:, 1::2] = np.cos(theta)
+        return out
 
     def get_feature_names_out(
-        self, input_features: list[str] | None = None
-    ) -> list[str]:
-        """Return output feature names (`<name>_sin`, `<name>_cos`)."""
-        name = input_features[0] if input_features else "x"
-        return [f"{name}_sin", f"{name}_cos"]
+        self, input_features: ArrayLike | None = None
+    ) -> np.ndarray:
+        """Return output feature names (`<name>_sin`, `<name>_cos` per column)."""
+        check_is_fitted(self, "n_features_in_")
+        if input_features is None:
+            input_features = getattr(
+                self,
+                "feature_names_in_",
+                [f"x{i}" for i in range(self.n_features_in_)],
+            )
+        names = list(input_features)
+        return np.asarray(
+            [f"{n}_{s}" for n in names for s in ("sin", "cos")], dtype=object
+        )
 
 
 class TargetEncoder(OneToOneFeatureMixin, TransformerMixin, BaseEstimator):

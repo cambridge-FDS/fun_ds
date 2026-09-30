@@ -1,0 +1,17 @@
+# Keep the Docker build context small and free of host-specific files.
+# The image installs its own environment from pixi.lock; never copy the host's.
+.pixi/
+.git/
+**/__pycache__/
+*.py[cod]
+.mypy_cache/
+.pytest_cache/
+.ruff_cache/
+.ipynb_checkpoints/
+.DS_Store
+docs/_build/
+mlruns/
+slides/
+.claude/
+*.pdf
+.env

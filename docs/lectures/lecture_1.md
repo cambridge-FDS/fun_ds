@@ -74,8 +74,7 @@ famous "Two Cultures" essay.
 - dominant in machine learning
 
 Both cultures have their place. The prediction–causation distinction returns
-throughout the MPhil EDS programme — D300 will re-open this discussion in
-depth {cite}`breiman2001statistical`.
+throughout the MPhil EDS programme — D300 will re-open this discussion in depth.
 
 ### Prediction, inference, and causation
 
@@ -101,8 +100,10 @@ substitute for.
 :::{tip}
 **Economic intuition catches conceptual failures early.** If your training
 data is New York housing but you deploy the model in Albany, no
-cross-validation score will save you — the deployment is _out of sample_.
-Many ML failures are conceptual, not algorithmic.
+cross-validation score will save you. Cross-validation already estimates
+_out-of-sample_ error, but only for new draws from the same distribution;
+Albany is _out of distribution_ (a covariate shift: different incomes, housing
+stock and prices). Many ML failures are conceptual, not algorithmic.
 :::
 
 ---
@@ -148,9 +149,9 @@ cleaning. Each lecture in this course zooms into one stage of the pipeline
 in depth.
 
 :::{note}
-Empirically, most real-world project time is spent on **data**, not on
-modelling {cite}`kuhn2019feature`. Feature engineering (Lecture 5) is
-therefore where much of the intellectual leverage lives.
+Notice how many of these stages concern the **data** rather than the model.
+Feature engineering ([Lecture 5](lecture_5.ipynb)) is where much of the
+intellectual leverage lives {cite}`kuhn2019feature`.
 :::
 
 ### The iterative nature of the workflow
@@ -158,13 +159,14 @@ therefore where much of the intellectual leverage lives.
 The linear presentation above is a pedagogical convenience, not a
 description of practice. Every mature process framework recognises that
 data projects loop. The **CRISP-DM** process model (Cross-Industry Standard
-Process for Data Mining, 1999) codifies six phases — business
+Process for Data Mining) {cite}`chapman2000crisp` codifies six phases — business
 understanding, data understanding, data preparation, modelling, evaluation,
-deployment — connected by explicit backward arrows: evaluation feeds back
-into business understanding, deployment feeds back into data understanding
-when drift appears. Twenty-five years on, CRISP-DM remains the most widely
-cited framework in industrial data-mining surveys, and its central insight
-— that data projects _never terminate cleanly_ — is now embedded in the
+deployment — connected by backward arrows: business and data understanding
+inform each other, data preparation and modelling alternate, and evaluation
+can send the project back to business understanding. An outer loop around the
+whole cycle returns from deployment to business understanding, because a
+deployed solution usually raises new business questions. Twenty-five years
+on, CRISP-DM is still a common reference point in industry, and its central insight — that data projects _never terminate cleanly_ — is now embedded in the
 MLOps literature. {cite:t}`huyen2022designing` argues that the design of an
 ML system is dominated by the feedback loops between its stages: the
 faster you can iterate from a monitoring signal back to a retrained model,
@@ -307,11 +309,17 @@ Three ingredients:
 
 1. an `__init__.py` in your source directory
 2. a `pyproject.toml` at the project root
-3. an editable install so imports resolve to your working copy:
+3. an editable install so imports resolve to your working copy. With pixi,
+   as in this course, declare the package as an editable path dependency in
+   `pixi.toml`; `pixi install` then installs it into the environment:
 
-```bash
-pip install -e .
+```toml
+[pypi-dependencies]
+mypkg = { path = ".", editable = true }
 ```
+
+Without pixi, the equivalent is `pip install -e .` inside your virtual
+environment.
 
 Once installed, any notebook can import your code:
 
@@ -459,16 +467,30 @@ def divide(a: float, b: float) -> float:
     return a / b  # divide(1, 0) raises ZeroDivisionError
 ```
 
-A `try`/`except` block states what should happen instead:
+A `try`/`except` block states what should happen instead. Resist the
+temptation to return a plausible-looking number such as `float("inf")`: that
+is wrong for `-1 / 0` (which would be $-\infty$) and meaningless for `0 / 0`,
+and the error then surfaces far downstream, if at all. Return an explicit
+"undefined" value and say so:
 
 ```python
+import math
+import warnings
+
+
 def divide(a: float, b: float) -> float:
-    """If b is zero, return infinity instead of crashing."""
+    """Divide a by b; return NaN (with a warning) if b is zero."""
     try:
         return a / b
     except ZeroDivisionError:
-        return float("inf")
+        warnings.warn(f"divide({a}, {b}): division by zero, returning NaN", stacklevel=2)
+        return math.nan
 ```
+
+`NaN` propagates through later arithmetic and is caught by the usual
+missing-value checks, and the warning tells you where it came from. If no
+caller can sensibly continue, do not catch the exception at all: letting
+`ZeroDivisionError` propagate is the most honest behaviour.
 
 Catch the _specific_ exception you expect (`ZeroDivisionError`, `KeyError`,
 `FileNotFoundError`, ...), never a bare `except:`, which would also swallow
@@ -520,16 +542,24 @@ model:
   random_state: 42
 ```
 
-and read it once, at the start of the orchestration script:
+and read it once, at the start of the orchestration script. As with data
+files, build the path from the file's own location, not from the working
+directory:
 
 ```python
 from pathlib import Path
 
-import yaml
+import yaml  # the PyYAML package
 
-config = yaml.safe_load(Path("configs/experiment_a.yaml").read_text())
+# In src/mypkg/scripts/train.py: go up to the repo root, then into configs/
+PROJECT_ROOT = Path(__file__).resolve().parents[3]
+config = yaml.safe_load((PROJECT_ROOT / "configs" / "experiment_a.yaml").read_text())
 test_size = config["model"]["test_size"]  # 0.2
 ```
+
+`yaml` is not in the standard library: declare `pyyaml` as a dependency of your
+project (in `pyproject.toml`, or with `pixi add pyyaml`) so the script does not
+only work on machines where someone happened to install it.
 
 A plain dictionary is enough to start with. For larger projects, Pydantic
 models validate the config (types, ranges, required keys) as it is loaded;
@@ -688,7 +718,7 @@ _Optional._ Each exercise trains one skill you will need whenever you take a rea
 Take any notebook you have written before (or a public one from [Kaggle](https://www.kaggle.com/)).
 
 1. Move every function into `src/mypkg/utils.py` and give each a type-hinted signature and a docstring.
-2. Add a `pyproject.toml` at the repository root (use the `fun_ds` one as a template) and run `pip install -e .`.
+2. Add a `pyproject.toml` at the repository root (use the `fun_ds` one as a template) and install it in editable mode: add `mypkg = { path = ".", editable = true }` under `[pypi-dependencies]` in `pixi.toml` and run `pixi install` (or `pip install -e .` without pixi).
 3. Replace the definitions in the notebook with `from mypkg.utils import ...`.
 4. Write one test in `tests/test_utils.py` that calls one of your functions on a tiny hand-made input and checks the result.
 

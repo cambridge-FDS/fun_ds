@@ -16,7 +16,7 @@ def load_california_housing(
         Whether to include the target column (MedHouseVal).
     add_ratios : bool, default False
         Whether to add domain-specific ratio features
-        (rooms_per_household, bedrooms_per_room).
+        (rooms_per_person, bedrooms_per_room).
 
     Returns
     -------
@@ -28,7 +28,7 @@ def load_california_housing(
 
     if add_ratios:
         df = df.copy()
-        df["rooms_per_household"] = df["AveRooms"] / df["AveOccup"]
+        df["rooms_per_person"] = df["AveRooms"] / df["AveOccup"]
         df["bedrooms_per_room"] = df["AveBedrms"] / df["AveRooms"]
 
     return df

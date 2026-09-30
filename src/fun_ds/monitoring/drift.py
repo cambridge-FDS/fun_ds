@@ -42,13 +42,36 @@ def population_stability_index(
     -------
     float
         PSI value. Higher → more drift.
+
+    Raises
+    ------
+    ValueError
+        If either input is empty or contains NaN/inf, or if the reference has
+        fewer than two distinct values. A drift check must fail loudly on bad
+        input rather than report "no drift". Handle missing values explicitly
+        (e.g. drop them and monitor the missing rate as a separate metric).
     """
-    ref = np.asarray(reference, dtype=float)
-    cur = np.asarray(current, dtype=float)
+    ref = np.asarray(reference, dtype=float).ravel()
+    cur = np.asarray(current, dtype=float).ravel()
+
+    for name, arr in (("reference", ref), ("current", cur)):
+        if arr.size == 0:
+            raise ValueError(f"PSI: {name} is empty.")
+        if not np.all(np.isfinite(arr)):
+            n_bad = int(np.sum(~np.isfinite(arr)))
+            raise ValueError(
+                f"PSI: {name} contains {n_bad} NaN/inf value(s). Drop or impute "
+                "them first and monitor the missing rate separately."
+            )
 
     # Build bins from reference quantiles (equal-frequency binning)
     quantiles = np.linspace(0, 100, n_bins + 1)
     bin_edges = np.unique(np.percentile(ref, quantiles))
+    if bin_edges.size < 2:
+        raise ValueError(
+            "PSI: reference has fewer than two distinct values, so no bins can "
+            "be formed. PSI is undefined for a constant reference."
+        )
 
     # Clip current data to reference range so edge bins absorb extremes
     ref_counts, _ = np.histogram(ref, bins=bin_edges)

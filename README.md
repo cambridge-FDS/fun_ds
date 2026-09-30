@@ -14,9 +14,8 @@ New to git, pixi or VS Code? Follow the step-by-step
 git clone https://github.com/cambridge-FDS/fun_ds.git
 cd fun_ds
 
-# Install the environment and the course package
+# Install the environment and the course package (editable)
 pixi install
-pixi run install
 
 # Check everything works
 pixi run test
@@ -43,4 +42,5 @@ pixi run lint         # run all pre-commit hooks
 
 ## License
 
-This material is licensed under [CC-BY-4.0](https://creativecommons.org/licenses/by/4.0/).
+The book content is licensed under [CC-BY-4.0](https://creativecommons.org/licenses/by/4.0/).
+The `fun_ds` Python package is released under the [MIT license](https://opensource.org/license/mit).

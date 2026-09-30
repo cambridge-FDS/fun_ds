@@ -433,8 +433,8 @@ Check the interpreter (bottom status bar) and the notebook kernel (top-right pic
    - Python
    - Jupyter
    - Ruff
-3. Clone the course repository and run `pixi install` + `pixi run install`
-   (see [Day 1 Setup](quickstart.md))
+3. Clone the course repository and run `pixi install`, which also installs
+   the `fun_ds` package (see [Day 1 Setup](quickstart.md))
 4. **File → Open Folder…** and choose the repository root (`fun_ds`)
 5. Select the Python interpreter (`.pixi/envs/default/`) for scripts
 6. Select the same environment as the Jupyter kernel when opening notebooks

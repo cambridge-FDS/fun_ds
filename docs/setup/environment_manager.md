@@ -64,7 +64,7 @@ available to conda is available to pixi.
 You already know conda and want to keep using it for your _own_ projects? That's
 fine. The [micromamba section](#appendix-micromamba) below shows a fast,
 conda-compatible tool. For the **course repository**, use pixi: its tasks
-(`pixi run install`, `pixi run test`, …) and the lockfile are what keep
+(`pixi run test`, `pixi run docs-start`, …) and the lockfile are what keep
 everyone's setup identical.
 :::
 
@@ -97,17 +97,43 @@ Open `pixi.toml` in the course repository. Its main parts are:
 
 - `[workspace]`: name, the package channel (`conda-forge`) and the
   **platforms** the lockfile is solved for (macOS Intel and Apple Silicon,
-  Linux, Windows).
+  Linux x86-64 and ARM, Windows).
 - `[dependencies]`: the core packages every lecture needs (`pandas`,
   `scikit-learn`, `matplotlib`, …), usually with a minimum version.
 - `[feature.<name>.dependencies]`: optional groups of packages. `docs` holds
   the heavier libraries used in later lectures (`polars`, `shap`, `mlflow`, …);
   `test` holds `pytest`; `lint` holds `pre-commit` and `ruff`.
+- `[pypi-dependencies]`: the course's own `fun_ds` package (see
+  [The course package](#course-package) below).
 - `[environments]`: which features make up which environment. The `default`
-  environment includes **all** features, so it is the only one you need.
+  environment includes everything the lectures use, so it is the only one you
+  need. (A slim `serve` environment exists only for the Lecture 9 Docker image.)
 - `[tasks]`: named commands (see below).
 
 `pixi.lock` is generated. Never edit it by hand, but do commit it.
+
+(course-package)=
+
+### The course package `fun_ds`
+
+The lecture notebooks import helpers from the course's own package,
+`fun_ds` (the code under `src/fun_ds/`). You don't install it separately:
+`pixi.toml` lists it as a dependency that points at the repository itself,
+
+```toml
+[pypi-dependencies]
+fun_ds = { path = ".", editable = true }
+```
+
+so `pixi install` builds the environment _and_ installs `fun_ds` into it.
+`editable = true` means the environment links to `src/fun_ds/` instead of
+copying it, so a change you make there shows up in the notebooks without
+reinstalling (restart the kernel to pick it up).
+
+This is the pixi-native way to do what `pip install -e .` does elsewhere, and
+it is why the warning [below](#adding-a-package) about not using `pip install`
+still holds: pixi records the package in `pixi.lock` and manages it together
+with everything else, so it survives the next `pixi install`.
 
 ### Everyday commands
 
@@ -133,7 +159,6 @@ The course `pixi.toml` defines these tasks, which you run with `pixi run <task>`
 
 | Task         | What it does                                                           |
 | ------------ | ---------------------------------------------------------------------- |
-| `install`    | Installs the course package `fun_ds` in editable mode (run once)       |
 | `test`       | Runs the unit tests in `tests/`                                        |
 | `check`      | Lints `src/` and `tests/` with ruff                                    |
 | `format`     | Auto-formats `src/` and `tests/` with ruff                             |

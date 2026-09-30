@@ -124,8 +124,9 @@ class DataProfiler:
             Sorted descending by |correlation|. Upper-triangle only (no duplicates).
         """
         self._check_fitted()
+        columns = ["feature_a", "feature_b", "correlation"]
         if len(self._numeric_cols) < 2:
-            return pd.DataFrame(columns=["feature_a", "feature_b", "correlation"])
+            return pd.DataFrame(columns=columns)
 
         corr = self._df[self._numeric_cols].corr(method=self.correlation_method)
         rows = []
@@ -136,8 +137,10 @@ class DataProfiler:
                 if abs(val) >= threshold:
                     rows.append({"feature_a": a, "feature_b": b, "correlation": val})
 
+        if not rows:
+            return pd.DataFrame(columns=columns)
         return (
-            pd.DataFrame(rows)
+            pd.DataFrame(rows, columns=columns)
             .sort_values("correlation", key=abs, ascending=False)
             .reset_index(drop=True)
         )

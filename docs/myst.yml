@@ -57,9 +57,6 @@ project:
         - file: lectures/lecture_7.ipynb
         - file: lectures/lecture_8.ipynb
         - file: lectures/lecture_9.ipynb
-    - title: Software Engineering
-      children:
-        - file: swe/memory_profiling.md
 
 site:
   title: Fundamentals of Data Science
